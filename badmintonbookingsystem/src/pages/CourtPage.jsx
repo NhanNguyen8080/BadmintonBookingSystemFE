@@ -1,14 +1,14 @@
 import SearchBar from '../components/SearchBar';
-import CenterList from './CenterList';
+import CourtList from './CourtList';
 
 
-function HomePage() {
+function CourtPage() {
     return (
         <div>
             <SearchBar />
-            <CenterList />
+            <CourtList />
         </div>
     );
 }
 
-export default HomePage;
+export default CourtPage;
