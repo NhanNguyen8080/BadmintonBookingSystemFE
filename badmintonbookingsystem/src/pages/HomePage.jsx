@@ -1,14 +1,12 @@
 import BannerSection from '../components/BannerSection';
 import SearchBar from '../components/SearchBar';
-
-
+import CenterList from './CenterList';
 
 function HomePage() {
     return (
         <div>
-            {/* <Header /> */}
             <SearchBar />
-            <BannerSection />
+            <CenterList />
         </div>
     );
 }

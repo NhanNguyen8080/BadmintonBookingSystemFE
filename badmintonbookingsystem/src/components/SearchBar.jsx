@@ -20,14 +20,14 @@ const SearchBar = () => {
                     <div style={styles.inputGroup}>
                         <span style={styles.icon}>➡️</span>
                         <div>
-                            <label style={styles.label}>Nhận sân</label>
+                            <label style={styles.label}>Giờ hoạt động</label>
                             <input type="text" placeholder="Bất kỳ" style={styles.input} />
                         </div>
                     </div>
                     <div style={styles.inputGroup}>
                         <span style={styles.icon}>⬅️</span>
                         <div>
-                            <label style={styles.label}>Trả sân</label>
+                            <label style={styles.label}>Giờ kết thúc</label>
                             <input type="text" placeholder="Bất kỳ" style={styles.input} />
                         </div>
                     </div>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import AddCenterModal from "./AddCenterModal";
-import { fetchCenters, updateCenterStatus } from "../../../services/centerService";
+import { fetchAllCenters, fetchCenters, updateCenterStatus } from "../../../services/centerService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faToggleOff, faToggleOn, faTrash } from "@fortawesome/free-solid-svg-icons";
 import UpdateCenterModal from "./UpdateCenterModal";
@@ -17,7 +17,7 @@ export default function Centers() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const centersData = await fetchCenters(currentPage);
+                const centersData = await fetchAllCenters(currentPage);
                 setCenters(centersData);
                 setTotalPages(10);
             } catch (error) {

@@ -1,6 +1,7 @@
-import { changeStatusCenter, createCenter, getAllCenters, manageCenters, updateCenter } from "../api/apiManagerCenter";
 
-export const fetchCenters = async (currentPage) => {
+import { changeStatusCenter, createCenter, getAllCenters, manageCenters, updateCenter } from "../api/apiManagerCenter";
+import { getBadmintonCenters } from "../api/apiBadmintonCenter";
+export const fetchAllCenters = async (currentPage) => {
     try {
         const response = await getAllCenters(currentPage);
         return response.data;
@@ -54,4 +55,16 @@ export const updateExistingCenter= async (id, centerData, imgAvatar, imageFiles)
   } catch (error) {
     throw error;
   }
-};
+}
+
+  export const fetchCenters = async () => {
+    try {
+        const response = await getBadmintonCenters();
+        const data = response.data;
+        console.log(data);
+        return data;
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        throw error;
+    }
+  }
