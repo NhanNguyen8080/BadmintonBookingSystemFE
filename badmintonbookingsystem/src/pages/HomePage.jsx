@@ -1,4 +1,3 @@
-import BannerSection from '../components/BannerSection';
 import SearchBar from '../components/SearchBar';
 import CenterList from './CenterList';
 
