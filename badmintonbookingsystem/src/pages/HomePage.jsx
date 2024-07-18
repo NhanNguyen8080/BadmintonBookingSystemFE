@@ -1,12 +1,12 @@
-import './App.css';
-import Header from './layouts/Header';
-import SearchBar from './components/SearchBar';
-import BannerSection from './components/BannerSection';
+import BannerSection from '../components/BannerSection';
+import SearchBar from '../components/SearchBar';
+
+
 
 function HomePage() {
     return (
         <div>
-            <Header />
+            {/* <Header /> */}
             <SearchBar />
             <BannerSection />
         </div>

@@ -7,10 +7,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { login, selectUser } from "../../redux/slices/authSlice";
 import SignUpModal from "./SignUpModal";
 import { authenticatedUser } from "../../services/authService";
+import { useNavigate } from "react-router-dom";
 
 export default function SignInModal() {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -29,6 +31,7 @@ export default function SignInModal() {
     try {
       const decoded = await authenticatedUser(dispatch, data);
       setIsSignInOpen(false);
+      navigate("/admin/accounts")
     } catch (error) {
       // Handle error inside authenticateUser
     }
