@@ -1,14 +1,15 @@
 
 import { changeStatusCenter, createCenter, getAllCenters, manageCenters, updateCenter } from "../api/apiManagerCenter";
-import { getBadmintonCenters } from "../api/apiBadmintonCenter";
+import { getBadmintonActiveCenters, getBadmintonCenterByManager } from "../api/apiBadmintonCenter";
+import { toast } from "react-toastify";
 export const fetchAllCenters = async (currentPage) => {
-    try {
-        const response = await getAllCenters(currentPage);
-        return response.data;
-    } catch (error) {
-        console.error('No data centers:', error);
-        throw error;
-    }
+  try {
+    const response = await getAllCenters(currentPage);
+    return response.data;
+  } catch (error) {
+    console.error('No data centers:', error);
+    throw error;
+  }
 };
 
 export const updateCenterStatus = async (id) => {
@@ -38,7 +39,7 @@ export const addNewCenter = async (centerData, imgAvatar, imageFiles) => {
   }
 };
 
-export const updateExistingCenter= async (id, centerData, imgAvatar, imageFiles) => {
+export const updateExistingCenter = async (id, centerData, imgAvatar, imageFiles) => {
   console.log(imageFiles);
   try {
     const response = await updateCenter(
@@ -57,14 +58,25 @@ export const updateExistingCenter= async (id, centerData, imgAvatar, imageFiles)
   }
 }
 
-  export const fetchCenters = async () => {
-    try {
-        const response = await getBadmintonCenters();
-        const data = response.data;
-        console.log(data);
-        return data;
-    } catch (error) {
-        console.error('Error fetching products:', error);
-        throw error;
-    }
+export const fetchCenters = async () => {
+  try {
+    const response = await getBadmintonActiveCenters();
+    const data = response.data;
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching centers:', error);
+    throw error;
   }
+}
+
+export const fetchBadmintonCenterByManager = async (token) => {
+  try {
+    const response = await getBadmintonCenterByManager(token);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching center:', error);
+    toast.error('Error fetching center');
+    throw error;
+  }
+};

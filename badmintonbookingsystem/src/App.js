@@ -8,31 +8,40 @@ import PrivateRoute from './components/PrivateRoute/Index';
 import AdminRoutes from './routes/AdminRoute';
 import NotFoundPage from './pages/NotFoundPage';
 import CourtPage from './pages/CourtPage';
+import ManagerRoutes from './routes/ManagerRoute';
 
 
 function App() {
   const user = useSelector(selectUser)
-  const isStaffOrAdmin = user && (user.role === 'staff' || user.role === 'Admin');
+  const isStaffOrAdminOrManager = user && (user.role === 'staff' || user.role === 'Admin' || user.role === 'Manager');
   return (
     <div>
-      {!isStaffOrAdmin && <Header />}
+      {!isStaffOrAdminOrManager && <Header />}
       <Routes>
         <Route
           path='/'
           element={<HomePage />}
         />
         <Route path='/badminton-centers/:centerId' element={<CourtPage />} />
-         <Route
+        <Route
           path='*'
           element={<NotFoundPage />}
         />
         <Route
           path='/admin/*'
           element={
-          <PrivateRoute allowedRoles={['Admin']}>
-          <AdminRoutes />
-         </PrivateRoute>
-        }
+            <PrivateRoute allowedRoles={['Admin']}>
+              <AdminRoutes />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path='/manager/*'
+          element={
+            <PrivateRoute oute allowedRoles={['Manager']}>
+              <ManagerRoutes />
+            </PrivateRoute>
+          }
         />
       </Routes>
     </div>

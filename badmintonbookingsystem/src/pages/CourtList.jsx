@@ -34,6 +34,7 @@ const CourtList = () => {
     const indexOfFirstUser = indexOfLastUser - courtsPerPage;
     const currentCourt = courts.slice(indexOfFirstUser, indexOfLastUser);
 
+    const totalPages = Math.max(Math.ceil(courts.length / courtsPerPage), 1);
     const nextPage = () => {
         if (currentPage < Math.ceil(courts.length / courtsPerPage)) {
             setCurrentPage(currentPage + 1);
@@ -79,11 +80,11 @@ const CourtList = () => {
                     <FontAwesomeIcon icon={faChevronLeft} />
                 </button>
                 <span className='text-lg font-bold text-gray-800'>
-                    Page {currentPage} of {Math.ceil(courts.length / courtsPerPage)}
+                    Page {currentPage} of {totalPages}
                 </span>
                 <button
                     onClick={nextPage}
-                    disabled={currentPage === Math.ceil(courts.length / courtsPerPage)}
+                    disabled={currentPage === totalPages}
                     className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded disabled:opacity-50"
                 >
                     <FontAwesomeIcon icon={faChevronRight} />

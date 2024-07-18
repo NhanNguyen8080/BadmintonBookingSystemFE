@@ -1,19 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { fetchCenters } from '../services/centerService';
-import { selectCenters, setCenters } from '../redux/slices/centerSlice';
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-
-const perPage = 9;
 
 const CenterList = () => {
     const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(1);
     const [centersPerPage] = useState(9);
-
     const [centers, setCenters] = useState([]);
 
     useEffect(() => {
@@ -21,21 +17,22 @@ const CenterList = () => {
             try {
                 const centersData = await fetchCenters();
                 setCenters(centersData);
-                console.log(centers);
             } catch (error) {
-                console.log(error);
+                console.error(error);
             }
         };
 
         fetchData();
-    }, [currentPage, dispatch]);
+    }, [dispatch]);
 
-    const indexOfLastUser = currentPage * centersPerPage;
-    const indexOfFirstUser = indexOfLastUser - centersPerPage;
-    const currentCenter = centers.slice(indexOfFirstUser, indexOfLastUser);
+    const indexOfLastCenter = currentPage * centersPerPage;
+    const indexOfFirstCenter = indexOfLastCenter - centersPerPage;
+    const currentCenters = centers.slice(indexOfFirstCenter, indexOfLastCenter);
+
+    const totalPages = Math.max(Math.ceil(centers.length / centersPerPage), 1);
 
     const nextPage = () => {
-        if (currentPage < Math.ceil(centers.length / centersPerPage)) {
+        if (currentPage < totalPages) {
             setCurrentPage(currentPage + 1);
         }
     };
@@ -48,10 +45,8 @@ const CenterList = () => {
 
     return (
         <div className="container mx-auto p-4">
-            {console.log("center")}
-
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {currentCenter?.map(center => (
+                {currentCenters.map(center => (
                     <div key={center.id} className="bg-white border rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-4">
                         <div className="relative">
                             <Link to={`/badminton-centers/${center.id}`}>
@@ -80,11 +75,11 @@ const CenterList = () => {
                     <FontAwesomeIcon icon={faChevronLeft} />
                 </button>
                 <span className='text-lg font-bold text-gray-800'>
-                    Page {currentPage} of {Math.ceil(centers.length / centersPerPage)}
+                    Page {currentPage} of {totalPages}
                 </span>
                 <button
                     onClick={nextPage}
-                    disabled={currentPage === Math.ceil(centers.length / centersPerPage)}
+                    disabled={currentPage === totalPages}
                     className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded disabled:opacity-50"
                 >
                     <FontAwesomeIcon icon={faChevronRight} />
@@ -92,7 +87,6 @@ const CenterList = () => {
             </div>
         </div>
     );
-
 };
 
 export default CenterList;

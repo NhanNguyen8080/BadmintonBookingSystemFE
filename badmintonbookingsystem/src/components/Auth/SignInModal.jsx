@@ -31,7 +31,11 @@ export default function SignInModal() {
     try {
       const decoded = await authenticatedUser(dispatch, data);
       setIsSignInOpen(false);
-      navigate("/admin/accounts")
+      if (decoded.role === 'Admin') {
+        navigate("/admin/accounts");
+      } else if (decoded.role === 'Manager') {
+        navigate("/manager/courts");
+      }
     } catch (error) {
       // Handle error inside authenticateUser
     }
