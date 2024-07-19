@@ -6,7 +6,7 @@ import { fetchCourtsByCenterId } from "../../../services/courtService";
 
 export default function Courts() {
     const [courts, setCourts] = useState([]);
-    const [center, setCenter] = useState([]);
+    const [center, setCenter] = useState(null);
     const [isAddModalOpen, setAddModalOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(parseInt(localStorage.getItem('currentPage')) || 1);
     const [totalPages, setTotalPages] = useState(1);
@@ -19,28 +19,32 @@ export default function Courts() {
             try {
                 if (token) {
                     const centerData = await fetchBadmintonCenterByManager(token);
-                    console.log(centerData)
+                    console.log('Fetched Center Data:', centerData);
                     setCenter(centerData);
-                    console.log(center)
                 }
             } catch (error) {
                 console.log(error);
             }
         };
         fetchCenterData();
+    }, [token]);
+
+    useEffect(() => {
         const fetchData = async () => {
-            try {
-                const courtsData = await fetchCourtsByCenterId(center[0].id);
-                setCourts(courtsData);
-                console.log(courts);
-                setTotalPages(10);
-            } catch (error) {
-                console.log(error);
+            if (center) {
+                try {
+                    const courtsData = await fetchCourtsByCenterId(center[0].id);
+                    setCourts(courtsData);
+                    console.log('Fetched Courts Data:', courtsData);
+                    setTotalPages(10); // Set this dynamically based on the fetched data if possible
+                } catch (error) {
+                    console.log(error);
+                }
             }
         };
-        localStorage.setItem('currentPage', currentPage);
         fetchData();
-    }, [currentPage]);
+        localStorage.setItem('currentPage', currentPage);
+    }, [center, currentPage]);
 
     const nextPage = () => {
         if (currentPage < totalPages) {

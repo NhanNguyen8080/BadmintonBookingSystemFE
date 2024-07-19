@@ -9,6 +9,7 @@ import AdminRoutes from './routes/AdminRoute';
 import NotFoundPage from './pages/NotFoundPage';
 import CourtPage from './pages/CourtPage';
 import ManagerRoutes from './routes/ManagerRoute';
+import ProtectedRoute from './routes/ProtectedRoute';
 
 
 function App() {
@@ -19,8 +20,11 @@ function App() {
       {!isStaffOrAdminOrManager && <Header />}
       <Routes>
         <Route
-          path='/'
-          element={<HomePage />}
+          path='/*'
+          element={
+            <ProtectedRoute exceptdRoles={['Admin', 'Manager']}>
+              <HomePage />
+            </ProtectedRoute>}
         />
         <Route path='/badminton-centers/:centerId' element={<CourtPage />} />
         <Route
@@ -38,7 +42,7 @@ function App() {
         <Route
           path='/manager/*'
           element={
-            <PrivateRoute oute allowedRoles={['Manager']}>
+            <PrivateRoute allowedRoles={['Manager']}>
               <ManagerRoutes />
             </PrivateRoute>
           }
