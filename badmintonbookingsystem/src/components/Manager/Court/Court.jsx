@@ -15,6 +15,8 @@ export default function Courts() {
     const [selectedCenter, setSelectedCenter] = useState(null);
     const token = localStorage.getItem("token");
 
+    const courtsPerPage = 5; // Adjust the number of courts to display per page as needed
+
     useEffect(() => {
         const fetchCenterData = async () => {
             try {
@@ -37,7 +39,7 @@ export default function Courts() {
                     const courtsData = await fetchCourtsByCenterId(center[0].id);
                     setCourts(courtsData);
                     console.log('Fetched Courts Data:', courtsData);
-                    setTotalPages(10); // Set this dynamically based on the fetched data if possible
+                    setTotalPages(Math.ceil(courtsData.length / courtsPerPage));
                 } catch (error) {
                     console.log(error);
                 }
@@ -57,6 +59,7 @@ export default function Courts() {
 
     const handleCourtAdded = (newCourt) => {
         setCourts((prevCourts) => [...prevCourts, newCourt]);
+        setTotalPages(Math.ceil((courts.length + 1) / courtsPerPage)); // Update total pages after adding a new court
     };
 
     const nextPage = () => {
@@ -86,6 +89,10 @@ export default function Courts() {
         }
     };
 
+    // Calculate the courts to display on the current page
+    const startIndex = (currentPage - 1) * courtsPerPage;
+    const courtsToDisplay = courts.slice(startIndex, startIndex + courtsPerPage);
+
     return (
         <>
             <div className='flex'>
@@ -114,7 +121,7 @@ export default function Courts() {
                                 Action
                             </div>
                         </div>
-                        {courts.map((court) => (
+                        {courtsToDisplay.map((court) => (
                             <div
                                 key={court.id}
                                 className='grid grid-cols-8 gap-4 items-center p-2 border-b hover:bg-gray-100'
@@ -162,7 +169,7 @@ export default function Courts() {
                             <button
                                 className='bg-gray-500 text-white px-3 py-2 rounded disabled:opacity-50'
                                 onClick={nextPage}
-                                disabled={currentPage === 15}
+                                disabled={currentPage >= totalPages}
                             >
                                 Next
                             </button>

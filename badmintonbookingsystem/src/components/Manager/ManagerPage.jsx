@@ -4,6 +4,8 @@ import { useLocation } from "react-router-dom";
 // import Centers from "./Center/Center";
 import Courts from "./Court/Court";
 import SidebarAdmin from "../../layouts/Sidebar";
+import TimeSlots from "./TimeSlot/TimeSlot";
+import Bookings from "./Booking/Booking";
 
 export default function ManagerPage() {
   const location = useLocation()
@@ -11,9 +13,12 @@ export default function ManagerPage() {
   if (location.pathname === "/manager/courts") {
     content = <Courts />;
   }
-  // else {
-  //   content = <Centers />;
-  // }
+  else if (location.pathname === "/manager/timeslots") {
+    content = <TimeSlots />;
+  }
+  else {
+    content = <Bookings />
+  }
 
   return (
     <>
