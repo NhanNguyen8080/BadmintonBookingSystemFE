@@ -1,15 +1,13 @@
 import React from 'react';
 import SignInModal from '../components/Auth/SignInModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout, selectUser } from '../redux/slices/authSlice';
+import { selectUser } from '../redux/slices/authSlice';
+import Logout from '../components/Auth/Logout';
 
 const Header = () => {
     const user = useSelector(selectUser);
     const dispatch = useDispatch();
 
-    const handleLogout = () => {
-        dispatch(logout());
-    };
 
     return (
         <header style={styles.header}>
@@ -26,13 +24,13 @@ const Header = () => {
                     <div className="user-info">
                         <i className="user-icon">👤</i>
                         <span>Xin chào! {user.unique_name}  </span>
-                        <button
-                            onClick={handleLogout}
+                        <Logout />
+                        {/* <button
                             className="logout-button text-gray-700 transition-colors duration-300 rounded-md hover:text-black hover:bg-gray-100 py-2 px-4"
                             style={styles.logoutButton}
                         >
                             Logout
-                        </button>
+                        </button> */}
                     </div>
                 </>
             ) : (

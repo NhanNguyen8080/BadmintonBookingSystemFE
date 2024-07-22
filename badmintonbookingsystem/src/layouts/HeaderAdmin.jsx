@@ -11,19 +11,16 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { logout, selectUser } from "../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
+import Logout from "../components/Auth/Logout";
 
 
 
 function HeaderAdmin() {
-    
+
     const [open, setOpen] = useState(false);
     const user = useSelector(selectUser)
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const handleLogout = () => {
-        navigate("/")
-        dispatch(logout());
-    };
 
 
     return (
@@ -45,13 +42,14 @@ function HeaderAdmin() {
                 <div className="w-fit flex items-center rounded font-bold pr-5 bg-transparent">
                     <p className="text-black-500 pr-2">{user.role}:</p>
                     <p className="text-orange-500">{user.name}</p>
-                    <button
+                    <Logout />
+                    {/* <button
                             onClick={handleLogout}
                             className="logout-button text-gray-700 transition-colors duration-300 rounded-md hover:text-black hover:bg-gray-100 py-2 px-4"
                             
                         >
                             Logout
-                        </button>
+                        </button> */}
                 </div>
             </div>
 

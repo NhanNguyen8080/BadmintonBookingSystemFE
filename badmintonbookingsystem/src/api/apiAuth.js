@@ -21,17 +21,19 @@ export const signUp = (userData) => {
     });
 };
 
-export const signOut = (data) => {
-    return axios.post(`${API_BASE_URL}/sign-out`, data, {
+export const signOut = (token) => {
+    return axios.delete(`${API_BASE_URL}/revoke`, {
         headers: {
-            'Content-Type': 'application/json'
+            'Accept': '*/*',
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
         }
     });
 };
 
-export const refreshTokenAPI = (token, refreshToken) => {
+export const refreshTokenAPI = (accessToken, refreshToken) => {
     return axios.post(`${API_BASE_URL}/refresh-token`, {
-        token,
+        accessToken,
         refreshToken,
     }, {
         headers: {

@@ -3,6 +3,7 @@ import { fetchBadmintonCenterByManager, updateCenterStatus } from "../../../serv
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faToggleOff, faToggleOn, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { fetchCourtsByCenterId } from "../../../services/courtService";
+import AddCourtModal from "./AddCourtModal";
 
 export default function Courts() {
     const [courts, setCourts] = useState([]);
@@ -46,6 +47,18 @@ export default function Courts() {
         localStorage.setItem('currentPage', currentPage);
     }, [center, currentPage]);
 
+    const handleOpenAddModal = () => {
+        setAddModalOpen(true);
+    };
+
+    const handleCloseAddModal = () => {
+        setAddModalOpen(false);
+    };
+
+    const handleCourtAdded = (newCourt) => {
+        setCourts((prevCourts) => [...prevCourts, newCourt]);
+    };
+
     const nextPage = () => {
         if (currentPage < totalPages) {
             const page = currentPage + 1;
@@ -77,6 +90,12 @@ export default function Courts() {
         <>
             <div className='flex'>
                 <div className='w-5/6 space-y-4 p-4'>
+                    <button
+                        className='p-4 bg-blue-500 text-white px-2 py-1 rounded'
+                        onClick={handleOpenAddModal}
+                    >
+                        Thêm sân
+                    </button>
                     <div className='bg-white rounded-lg overflow-hidden shadow-lg'>
                         <div className='grid grid-cols-8 gap-4 items-center p-2 bg-gray-200'>
                             <div className='text-center text-lg font-bold col-span-2'>
@@ -124,7 +143,7 @@ export default function Courts() {
                                 </div>
                                 <div className='flex items-center justify-center'>
                                     <button>
-                                        <FontAwesomeIcon icon={faTrash} style={{ color: "#8a0505" }} size="2x" />
+                                        <FontAwesomeIcon icon={faPenToSquare} style={{ color: "#8a0505" }} size="2x" />
                                     </button>
                                 </div>
                             </div>
@@ -150,6 +169,11 @@ export default function Courts() {
                         </div>
                     </div>
                 </div>
+                <AddCourtModal
+                    isOpen={isAddModalOpen}
+                    onClose={handleCloseAddModal}
+                    onCourtAdded={handleCourtAdded}
+                />
             </div>
         </>
     );

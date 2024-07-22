@@ -1,4 +1,5 @@
 import axios from 'axios';
+import axiosInstance from './axiosInstance';
 
 const API_BASE_URL = "https://badmintonbookingsystem-d2d306159d50.herokuapp.com/api";
 const size = 9;
@@ -19,7 +20,7 @@ export const getBadmintonActiveCenters = (pageIndex) => {
 
 export const getBadmintonCenterByManager = (token) => {
 
-    return axios.get(`${API_BASE_URL}/badminton-centers/manager`, {
+    return axiosInstance.get(`${API_BASE_URL}/badminton-centers/manager`, {
         headers: {
             'Accept': '*/*',
             "Authorization": `Bearer ${token}`,

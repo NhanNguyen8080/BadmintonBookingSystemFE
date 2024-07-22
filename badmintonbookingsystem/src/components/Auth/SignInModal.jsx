@@ -30,6 +30,9 @@ export default function SignInModal() {
   const onSubmit = async (data) => {
     try {
       const decoded = await authenticatedUser(dispatch, data);
+      console.log(decoded);
+      const currentTime = Date.now() / 1000;
+      console.log(currentTime);
       setIsSignInOpen(false);
       if (decoded.role === 'Admin') {
         navigate("/admin/accounts");
