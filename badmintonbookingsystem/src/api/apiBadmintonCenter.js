@@ -28,3 +28,12 @@ export const getBadmintonCenterByManager = (token) => {
         }
     });
 };
+
+export const getBadmintonCenterById = (id) => {
+
+    return axios.get(`${API_BASE_URL}/badminton-centers/${id}`, {
+        headers: {
+            'Accept': '*/*'
+        }
+    });
+};

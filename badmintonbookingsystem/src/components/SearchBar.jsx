@@ -4,11 +4,6 @@ const SearchBar = () => {
     return (
         <div style={styles.backgroundContainer}>
             <div style={styles.searchBarContainer}>
-                <div style={styles.tabs}>
-                    <a href="#hourly" style={{ ...styles.tab, ...styles.activeTab }}>Theo giờ</a>
-                    <a href="#monthly" style={styles.tab}>Theo tháng</a>
-                    {/* <a href="#daily" style={styles.tab}>Theo ngày</a> */}
-                </div>
                 <div style={styles.searchBar}>
                     <div style={styles.inputGroup}>
                         <span style={styles.icon}>📍</span>

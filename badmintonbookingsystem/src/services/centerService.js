@@ -1,10 +1,20 @@
 
-import { changeStatusCenter, createCenter, getAllCenters, manageCenters, updateCenter } from "../api/apiManagerCenter";
-import { getBadmintonActiveCenters, getBadmintonCenterByManager } from "../api/apiBadmintonCenter";
+import { changeStatusCenter, createCenter, getAllCenters, updateCenter } from "../api/apiManagerCenter";
+import { getBadmintonActiveCenters, getBadmintonCenterById, getBadmintonCenterByManager } from "../api/apiBadmintonCenter";
 import { toast } from "react-toastify";
 export const fetchAllCenters = async (currentPage) => {
   try {
     const response = await getAllCenters(currentPage);
+    return response.data;
+  } catch (error) {
+    console.error('No data centers:', error);
+    throw error;
+  }
+};
+
+export const fetchCenterById = async (id) => {
+  try {
+    const response = await getBadmintonCenterById(id);
     return response.data;
   } catch (error) {
     console.error('No data centers:', error);

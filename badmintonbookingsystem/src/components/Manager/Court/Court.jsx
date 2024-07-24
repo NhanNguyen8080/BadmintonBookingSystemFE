@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { fetchBadmintonCenterByManager, updateCenterStatus } from "../../../services/centerService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faToggleOff, faToggleOn, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { fetchCourtsByCenterId } from "../../../services/courtService";
+import { fetchCourtsByCenterId, updateCourtStatus } from "../../../services/courtService";
 import AddCourtModal from "./AddCourtModal";
 
 export default function Courts() {
@@ -78,14 +78,14 @@ export default function Courts() {
     const handleChangeStatus = async (id) => {
         try {
             console.log(id);
-            const updatedCenter = await updateCenterStatus(id);
-            setCourts((prevCenters) =>
-                prevCenters.map((center) =>
-                    center.id === updatedCenter.id ? { ...center, isActive: updatedCenter.isActive } : center
+            const updatedCourt = await updateCourtStatus(id);
+            setCourts((prevCourts) =>
+                prevCourts.map((court) =>
+                    court.id === updatedCourt.id ? { ...court, isActive: updatedCourt.isActive } : court
                 )
             );
         } catch (error) {
-            console.error('Error changing center status:', error);
+            console.error('Error changing court status:', error);
         }
     };
 
@@ -138,7 +138,7 @@ export default function Courts() {
                                     {court.centerName}
                                 </div>
                                 <div className='text-center flex items-center justify-center' >
-                                    <button onClick={() => handleChangeStatus(center.id)}
+                                    <button onClick={() => handleChangeStatus(court.id)}
                                         title={court.isActive ? "Active" : "InActive"}
                                     >
                                         <FontAwesomeIcon

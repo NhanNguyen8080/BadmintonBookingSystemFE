@@ -1,4 +1,4 @@
-import { createCourt, getCourtsByCenterId } from "../api/apiCourt";
+import { changeStatusCourt, createCourt, getCourtsByCenterId } from "../api/apiCourt";
 
 export const fetchCourtsByCenterId = async (centerId) => {
   try {
@@ -12,14 +12,20 @@ export const fetchCourtsByCenterId = async (centerId) => {
   }
 };
 
-export const addNewCourt = async (centerData, imageFiles) => {
+export const updateCourtStatus = async (id) => {
+  try {
+    const response = await changeStatusCourt(id);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const addNewCourt = async (courtName, centerId, imageFiles) => {
   try {
     const response = await createCourt(
-      centerData.name,
-      centerData.location,
-      centerData.operatingTime,
-      centerData.closingTime,
-      centerData.managerId,
+      courtName,
+      centerId,
       imageFiles
     );
     return response.data;
