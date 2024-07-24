@@ -1,27 +1,50 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { addNewCenter } from '../../../services/centerService';
+import { addNewCourt } from '../../../services/courtService';
+import { fetchBadmintonCenterByManager } from '../../../services/centerService';
 
 
 const AddCourtModal = ({ isOpen, onClose, onCourtAdded }) => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [imgAvatar, setImgAvatar] = useState(null);
     const [imageFiles, setImageFiles] = useState([]);
+    const [center, setCenter] = useState(null);
+    const token = localStorage.getItem("token");
+
+    useEffect(() => {
+        const fetchCenterData = async () => {
+            try {
+                if (token) {
+                    const centerData = await fetchBadmintonCenterByManager(token);
+                    console.log('Fetched Center Data:', centerData);
+                    setCenter(centerData);
+                    console.log(center)
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchCenterData();
+    }, [token]);
+
+    useEffect(() => {
+        console.log('Center State Updated:', center);
+    }, [center]);
 
     const onSubmit = async (data) => {
-        const { name, location, operatingTime, closingTime, managerId } = data;
+        const courtName = data.courtName;
         const files = imageFiles.length > 0 ? Array.from(imageFiles) : [];
 
         try {
-            const response = await addNewCenter(
-                { name, location, operatingTime, closingTime, managerId },
-                imgAvatar,
+            const response = await addNewCourt(
+                courtName,
+                center[0].id,
                 files
             );
             onClose();
             onCourtAdded(response);
         } catch (error) {
-            console.error('Error creating center:', error);
+            console.error('Error creating Court:', error);
         }
     };
 
@@ -44,21 +67,21 @@ const AddCourtModal = ({ isOpen, onClose, onCourtAdded }) => {
                         <label className="block mb-1">Tên sân</label>
                         <input
                             type="text"
-                            {...register('name', { required: 'Name is required' })}
+                            {...register('courtName', { required: 'Name is required' })}
                             className="w-full border px-2 py-1 rounded"
                         />
                         {errors.name && <p className="text-red-500">{errors.name.message}</p>}
                     </div>
-                    <div className="mb-4">
+                    {/* <div className="mb-4">
                         <label className="block mb-1">Ảnh sân</label>
                         <input
                             type="file"
                             onChange={handleImgAvatarChange}
                             className="w-full border px-2 py-1 rounded"
                         />
-                    </div>
+                    </div> */}
                     <div className="mb-4">
-                        <label className="block mb-1">Ảnh khác</label>
+                        <label className="block mb-1">Ảnh sân</label>
                         <input
                             type="file"
                             onChange={handleImageFilesChange}

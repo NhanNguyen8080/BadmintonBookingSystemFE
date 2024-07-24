@@ -11,14 +11,26 @@ export const getCourtsByCenterId = (centerId) => {
     });
 };
 
-export const createCourt = (courtName, centerId, imageFiles) => {
+export const changeStatusCourt = (id) => {
+    return axios.put(`${API_BASE_URL}/courts-toggle/${id}`, {
+        headers: {
+            'accept': "*/*"
+        }
+    });
+};
+
+export const createCourt = (CourtName, CenterId, ImageFiles) => {
     const formData = new FormData();
-    formData.append('CourtName', courtName);
-    formData.append('CenterId ', centerId);
-    imageFiles.forEach(file => {
+    console.log(CourtName);
+    console.log(CenterId);
+    console.log(ImageFiles);
+    formData.append('CourtName', CourtName);
+    formData.append('CenterId ', CenterId);
+    ImageFiles.forEach(file => {
         formData.append('ImageFiles', file);
     });
-    return axios.post(`${API_BASE_URL}/badminton-centers`, formData, {
+
+    return axios.post(`${API_BASE_URL}/courts`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },

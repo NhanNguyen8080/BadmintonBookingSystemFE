@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
-import { fetchCenters } from '../services/centerService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { fetchCourtsByCenterId } from '../services/courtService';
+import { getBadmintonCenterById } from '../api/apiBadmintonCenter';
 
 const perPage = 9;
 
@@ -13,8 +13,26 @@ const CourtList = () => {
     const { centerId } = useParams();
     const [currentPage, setCurrentPage] = useState(1);
     const [courtsPerPage] = useState(9);
-
+    const [center, setCenter] = useState(null);
     const [courts, setCourts] = useState([]);
+
+    useEffect(() => {
+        const fetchCenterData = async () => {
+            try {
+                const centerData = await getBadmintonCenterById(centerId);
+                setCenter(centerData);
+                console.log(center);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchCenterData();
+    }, []);
+
+    useEffect(() => {
+        console.log('Center State Updated:', center);
+    }, [center]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -49,7 +67,23 @@ const CourtList = () => {
 
     return (
         <div className="container mx-auto p-4">
-            {console.log("court")}
+            {center && center.data && (
+                <>
+                    <h1 className="text-center text-2xl font-bold mb-4">{center.data.name}</h1>
+                    {center.data.imgAvatar && (
+                        <div className="flex justify-center">
+                            <img
+                                src={center.data.imgAvatar}
+                                alt={center.data.imgAvatar}
+                                className="w-full h-80 object-fill rounded-t-lg mb-4 shadow-lg"
+                            />
+                        </div>
+                    )}
+                </>
+            )}
+
+
+
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {currentCourt?.map(court => (

@@ -1,6 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUsers, faHouseCircleCheck, faLocationDot, faCheckToSlot } from "@fortawesome/free-solid-svg-icons";
+import { faUsers, faHouseCircleCheck, faLocationDot, faCheckToSlot, faCalendarCheck } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectUser } from "../redux/slices/authSlice";
@@ -17,13 +17,19 @@ export default function SidebarAdmin() {
           <li className="mb-4">
             <Link to="/manager/courts" className={commonStyles}>
               <FontAwesomeIcon icon={faLocationDot} className="pr-3" />
-              Courts
+              Quản lý sân
             </Link>
           </li>
           <li className="mb-4">
             <Link to="/manager/timeslots" className={commonStyles}>
               <FontAwesomeIcon icon={faCheckToSlot} className="pr-3" />
-              TimeSlots
+              Quản lý slot
+            </Link>
+          </li>
+          <li className="mb-4">
+            <Link to="/manager/bookings" className={commonStyles}>
+              <FontAwesomeIcon icon={faCalendarCheck} className="pr-3" />
+              Quản lý đặt sân
             </Link>
           </li>
         </ul>

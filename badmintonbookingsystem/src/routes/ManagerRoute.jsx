@@ -8,6 +8,7 @@ const ManagerRoutes = () => {
       <Route path="/courts" element={<ManagerPage />} />
       {/* <Route path=":productId" element={<ProductDetails />} /> */}
       <Route path="/timeslots" element={<ManagerPage />} />
+      <Route path="/bookings" element={<ManagerPage />} />
     </Routes>
   );
 };
