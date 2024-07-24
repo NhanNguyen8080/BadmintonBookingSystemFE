@@ -1,5 +1,5 @@
 
-import { changeStatusCenter, createCenter, getAllCenters, manageCenters, updateCenter } from "../api/apiManagerCenter";
+import { changeStatusCenter, createCenter, getAllCenters, updateCenter } from "../api/apiAdminCenter";
 import { getBadmintonActiveCenters, getBadmintonCenterByManager } from "../api/apiBadmintonCenter";
 import { toast } from "react-toastify";
 import { getBadmintonCenters } from "../api/apiBadmintonCenter";
