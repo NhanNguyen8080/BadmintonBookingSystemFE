@@ -1,4 +1,29 @@
-import { getBookingsByCenterId } from "../api/apiBooking";
+import { fixedBookingAPI, getBookingsByCenterId } from "../api/apiBooking";
+import { singleBookingAPI } from "../api/apiBooking";
+
+export const singleBooking = async (listTimeSlotId, bookingDate) => {
+  try {
+    const response = await singleBookingAPI(listTimeSlotId, bookingDate);
+    const data = response.data;
+    // console.log(data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching booking:', error);
+    throw error;
+  }
+};
+
+export const fixedBooking = async (bookingData) => {
+  try {
+    const response = await fixedBookingAPI(bookingData);
+    const data = response.data;
+    // console.log(data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching booking:', error);
+    throw error;
+  }
+};
 
 export const fetchBookingsByCenterId = async (centerId) => {
     try {

@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useParams } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { fetchCenters } from '../services/centerService';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { fetchCourtsByCenterId } from '../services/courtService';
+import TimeSlotModal from '../components/TimeSlot/TimeSlotModal';
+import { Link, useParams } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getBadmintonCenterById } from '../api/apiBadmintonCenter';
+import FixedBookingModal from '../components/TimeSlot/FixedBookingModal';
 
 const perPage = 9;
 
@@ -15,6 +18,9 @@ const CourtList = () => {
     const [courtsPerPage] = useState(9);
     const [center, setCenter] = useState(null);
     const [courts, setCourts] = useState([]);
+    const [selectedCourt, setSelectedCourt] = useState(null); // State to store the selected court
+    const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+    const [modalType, setModalType] = useState(null); // State to track which modal to open
 
     useEffect(() => {
         const fetchCenterData = async () => {
@@ -39,7 +45,6 @@ const CourtList = () => {
             try {
                 const courtsData = await fetchCourtsByCenterId(centerId);
                 setCourts(courtsData);
-                console.log(courts);
             } catch (error) {
                 console.log(error);
             }
@@ -65,6 +70,12 @@ const CourtList = () => {
         }
     };
 
+    const handleCourtClick = (courtId, type) => {
+        setSelectedCourt({ id: courtId });
+        setModalType(type);
+        setIsModalOpen(true);
+    };
+
     return (
         <div className="container mx-auto p-4">
             {center && center.data && (
@@ -82,26 +93,38 @@ const CourtList = () => {
                 </>
             )}
 
-
-
-
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {currentCourt?.map(court => (
-                    <div key={court.id} className="bg-white border rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-4">
+                    <div
+                        key={court.id}
+                        className="bg-white border rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-4 cursor-pointer"
+                    >
                         <div className="relative">
-                            <Link to={`/timeslots/court/${court.id}`}>
-                                <div className="bg-white flex justify-court">
-                                    <img
-                                        src={court.courtImgUrls[0]}
-                                        alt={court.courtImgUrls[0]}
-                                        className="h-48 w-full object-cover rounded-t-lg mb-4"
-                                    />
-                                </div>
-                            </Link>
+                            <div className="bg-white flex justify-center">
+                                <img
+                                    src={court.courtImgUrls[0]}
+                                    alt={court.courtImgUrls[0]}
+                                    className="h-48 w-full object-cover rounded-t-lg mb-4"
+                                />
+                            </div>
                         </div>
-                        <Link to={`/timeslots/court/${court.id}`}>
+                        <div className="flex justify-between">
                             <h2 className="text-xl font-semibold text-gray-800">{court.courtName}</h2>
-                        </Link>
+                            <div className="space-x-5">
+                                <button
+                                    className="rounded bg-blue-500 text-white p-2"
+                                    onClick={() => handleCourtClick(court.id, 'fixed')}
+                                >
+                                    Fixed Booking
+                                </button>
+                                <button
+                                    className="rounded bg-blue-500 text-white p-2"
+                                    onClick={() => handleCourtClick(court.id, 'single')}
+                                >
+                                    Single Booking
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 ))}
             </div>
@@ -124,9 +147,22 @@ const CourtList = () => {
                     <FontAwesomeIcon icon={faChevronRight} />
                 </button>
             </div>
+            {selectedCourt && modalType === 'fixed' && (
+                <FixedBookingModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    courtId={selectedCourt.id}
+                />
+            )}
+            {selectedCourt && modalType === 'single' && (
+                <TimeSlotModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    courtId={selectedCourt.id}
+                />
+            )}
         </div>
     );
-
 };
 
 export default CourtList;
