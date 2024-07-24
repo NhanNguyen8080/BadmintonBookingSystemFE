@@ -2,6 +2,7 @@
 import { changeStatusCenter, createCenter, getAllCenters, manageCenters, updateCenter } from "../api/apiManagerCenter";
 import { getBadmintonActiveCenters, getBadmintonCenterByManager } from "../api/apiBadmintonCenter";
 import { toast } from "react-toastify";
+import { getBadmintonCenters } from "../api/apiBadmintonCenter";
 export const fetchAllCenters = async (currentPage) => {
   try {
     const response = await getAllCenters(currentPage);
@@ -39,16 +40,12 @@ export const addNewCenter = async (centerData, imgAvatar, imageFiles) => {
   }
 };
 
-export const updateExistingCenter = async (id, centerData, imgAvatar, imageFiles) => {
+export const updateExistingCenter = async (id, name, location, operatingTime, closingTime, managerId, imgAvatar, imageFiles) => {
   console.log(imageFiles);
   try {
     const response = await updateCenter(
       id,
-      centerData.name,
-      centerData.location,
-      centerData.operatingTime,
-      centerData.closingTime,
-      centerData.managerId,
+      name, location, operatingTime, closingTime, managerId,
       imgAvatar,
       imageFiles
     );
