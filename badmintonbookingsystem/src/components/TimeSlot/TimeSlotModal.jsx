@@ -2,10 +2,9 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState, useEffect } from "react";
 import { format, addDays, subDays, isBefore } from "date-fns";
 import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
 import { selectUser } from "../../redux/slices/authSlice";
-import { fetchTimeSlot } from "../../services/timeslotService";
 import { singleBooking } from "../../services/bookingService";
+import { fetchTimeSlot } from "../../services/timeSlotService";
 
 export default function TimeSlotModal({ isOpen, onClose, courtId }) {
     const [selectedTimes, setSelectedTimes] = useState([]);

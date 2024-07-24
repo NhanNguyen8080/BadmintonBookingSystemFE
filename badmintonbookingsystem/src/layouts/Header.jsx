@@ -14,10 +14,6 @@ const Header = () => {
             <div style={styles.logo}>
                 <img src="/images/logo.png" alt="Logo" style={styles.logoImage} />
             </div>
-            <nav style={styles.nav}>
-                <a href="#offers" style={styles.navLink}>Ưu đãi</a>
-                <a href="#hotels" style={styles.navLink}>Danh mục khách sạn</a>
-            </nav>
             {user ? (
                 <>
                     {/* {console.log(user)} */}

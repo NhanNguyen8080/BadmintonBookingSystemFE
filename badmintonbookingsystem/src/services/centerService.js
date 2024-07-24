@@ -1,10 +1,21 @@
 
-import { changeStatusCenter, createCenter, getAllCenters, manageCenters, updateCenter } from "../api/apiManagerCenter";
-import { getBadmintonActiveCenters, getBadmintonCenterByManager } from "../api/apiBadmintonCenter";
+import { changeStatusCenter, createCenter, getAllCenters, updateCenter } from "../api/apiAdminCenter";
+import { getBadmintonActiveCenters, getBadmintonCenterById, getBadmintonCenterByManager } from "../api/apiBadmintonCenter";
 import { toast } from "react-toastify";
+import { getBadmintonCenters } from "../api/apiBadmintonCenter";
 export const fetchAllCenters = async (currentPage) => {
   try {
     const response = await getAllCenters(currentPage);
+    return response.data;
+  } catch (error) {
+    console.error('No data centers:', error);
+    throw error;
+  }
+};
+
+export const fetchCenterById = async (id) => {
+  try {
+    const response = await getBadmintonCenterById(id);
     return response.data;
   } catch (error) {
     console.error('No data centers:', error);
@@ -39,16 +50,12 @@ export const addNewCenter = async (centerData, imgAvatar, imageFiles) => {
   }
 };
 
-export const updateExistingCenter = async (id, centerData, imgAvatar, imageFiles) => {
+export const updateExistingCenter = async (id, name, location, operatingTime, closingTime, managerId, imgAvatar, imageFiles) => {
   console.log(imageFiles);
   try {
     const response = await updateCenter(
       id,
-      centerData.name,
-      centerData.location,
-      centerData.operatingTime,
-      centerData.closingTime,
-      centerData.managerId,
+      name, location, operatingTime, closingTime, managerId,
       imgAvatar,
       imageFiles
     );

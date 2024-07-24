@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { fetchBadmintonCenterByManager, updateCenterStatus } from "../../../services/centerService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faToggleOff, faToggleOn, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { fetchCourtsByCenterId } from "../../../services/courtService";
+import { fetchCourtsByCenterId, updateCourtStatus } from "../../../services/courtService";
 import AddCourtModal from "./AddCourtModal";
 
 export default function Courts() {
@@ -14,6 +14,8 @@ export default function Courts() {
     const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
     const [selectedCenter, setSelectedCenter] = useState(null);
     const token = localStorage.getItem("token");
+
+    const courtsPerPage = 5; // Adjust the number of courts to display per page as needed
 
     useEffect(() => {
         const fetchCenterData = async () => {
@@ -37,7 +39,7 @@ export default function Courts() {
                     const courtsData = await fetchCourtsByCenterId(center[0].id);
                     setCourts(courtsData);
                     console.log('Fetched Courts Data:', courtsData);
-                    setTotalPages(10); // Set this dynamically based on the fetched data if possible
+                    setTotalPages(Math.ceil(courtsData.length / courtsPerPage));
                 } catch (error) {
                     console.log(error);
                 }
@@ -57,6 +59,7 @@ export default function Courts() {
 
     const handleCourtAdded = (newCourt) => {
         setCourts((prevCourts) => [...prevCourts, newCourt]);
+        setTotalPages(Math.ceil((courts.length + 1) / courtsPerPage)); // Update total pages after adding a new court
     };
 
     const nextPage = () => {
@@ -75,16 +78,20 @@ export default function Courts() {
     const handleChangeStatus = async (id) => {
         try {
             console.log(id);
-            const updatedCenter = await updateCenterStatus(id);
-            setCourts((prevCenters) =>
-                prevCenters.map((center) =>
-                    center.id === updatedCenter.id ? { ...center, isActive: updatedCenter.isActive } : center
+            const updatedCourt = await updateCourtStatus(id);
+            setCourts((prevCourts) =>
+                prevCourts.map((court) =>
+                    court.id === updatedCourt.id ? { ...court, isActive: updatedCourt.isActive } : court
                 )
             );
         } catch (error) {
-            console.error('Error changing center status:', error);
+            console.error('Error changing court status:', error);
         }
     };
+
+    // Calculate the courts to display on the current page
+    const startIndex = (currentPage - 1) * courtsPerPage;
+    const courtsToDisplay = courts.slice(startIndex, startIndex + courtsPerPage);
 
     return (
         <>
@@ -114,7 +121,7 @@ export default function Courts() {
                                 Action
                             </div>
                         </div>
-                        {courts.map((court) => (
+                        {courtsToDisplay.map((court) => (
                             <div
                                 key={court.id}
                                 className='grid grid-cols-8 gap-4 items-center p-2 border-b hover:bg-gray-100'
@@ -131,7 +138,7 @@ export default function Courts() {
                                     {court.centerName}
                                 </div>
                                 <div className='text-center flex items-center justify-center' >
-                                    <button onClick={() => handleChangeStatus(center.id)}
+                                    <button onClick={() => handleChangeStatus(court.id)}
                                         title={court.isActive ? "Active" : "InActive"}
                                     >
                                         <FontAwesomeIcon
@@ -162,7 +169,7 @@ export default function Courts() {
                             <button
                                 className='bg-gray-500 text-white px-3 py-2 rounded disabled:opacity-50'
                                 onClick={nextPage}
-                                disabled={currentPage === 15}
+                                disabled={currentPage >= totalPages}
                             >
                                 Next
                             </button>

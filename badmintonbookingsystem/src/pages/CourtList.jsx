@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
 import { fetchCenters } from '../services/centerService';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { fetchCourtsByCenterId } from '../services/courtService';
 import TimeSlotModal from '../components/TimeSlot/TimeSlotModal';
+import { Link, useParams } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { getBadmintonCenterById } from '../api/apiBadmintonCenter';
+import FixedBookingModal from '../components/TimeSlot/FixedBookingModal';
 
 const perPage = 9;
 
@@ -14,9 +16,29 @@ const CourtList = () => {
     const { centerId } = useParams();
     const [currentPage, setCurrentPage] = useState(1);
     const [courtsPerPage] = useState(9);
+    const [center, setCenter] = useState(null);
     const [courts, setCourts] = useState([]);
     const [selectedCourt, setSelectedCourt] = useState(null); // State to store the selected court
     const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+    const [modalType, setModalType] = useState(null); // State to track which modal to open
+
+    useEffect(() => {
+        const fetchCenterData = async () => {
+            try {
+                const centerData = await getBadmintonCenterById(centerId);
+                setCenter(centerData);
+                console.log(center);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchCenterData();
+    }, []);
+
+    useEffect(() => {
+        console.log('Center State Updated:', center);
+    }, [center]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -48,25 +70,34 @@ const CourtList = () => {
         }
     };
 
-    const handleCourtClick = async (courtId) => {
-        try {
-            const response = await fetch(`https://badmintonbookingsystem-d2d306159d50.herokuapp.com/api/timeslots-table/court/${courtId}`);
-            const timeslots = await response.json();
-            setSelectedCourt({ id: courtId, timeslots });
-            setIsModalOpen(true);
-        } catch (error) {
-            console.error('Error fetching timeslots:', error);
-        }
+    const handleCourtClick = (courtId, type) => {
+        setSelectedCourt({ id: courtId });
+        setModalType(type);
+        setIsModalOpen(true);
     };
 
     return (
         <div className="container mx-auto p-4">
+            {center && center.data && (
+                <>
+                    <h1 className="text-center text-2xl font-bold mb-4">{center.data.name}</h1>
+                    {center.data.imgAvatar && (
+                        <div className="flex justify-center">
+                            <img
+                                src={center.data.imgAvatar}
+                                alt={center.data.imgAvatar}
+                                className="w-full h-80 object-fill rounded-t-lg mb-4 shadow-lg"
+                            />
+                        </div>
+                    )}
+                </>
+            )}
+
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {currentCourt?.map(court => (
                     <div
                         key={court.id}
                         className="bg-white border rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-4 cursor-pointer"
-                        onClick={() => handleCourtClick(court.id)} 
                     >
                         <div className="relative">
                             <div className="bg-white flex justify-center">
@@ -77,7 +108,23 @@ const CourtList = () => {
                                 />
                             </div>
                         </div>
-                        <h2 className="text-xl font-semibold text-gray-800">{court.courtName}</h2>
+                        <div className="flex justify-between">
+                            <h2 className="text-xl font-semibold text-gray-800">{court.courtName}</h2>
+                            <div className="space-x-5">
+                                <button
+                                    className="rounded bg-blue-500 text-white p-2"
+                                    onClick={() => handleCourtClick(court.id, 'fixed')}
+                                >
+                                    Fixed Booking
+                                </button>
+                                <button
+                                    className="rounded bg-blue-500 text-white p-2"
+                                    onClick={() => handleCourtClick(court.id, 'single')}
+                                >
+                                    Single Booking
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 ))}
             </div>
@@ -100,11 +147,17 @@ const CourtList = () => {
                     <FontAwesomeIcon icon={faChevronRight} />
                 </button>
             </div>
-            {selectedCourt && (
+            {selectedCourt && modalType === 'fixed' && (
+                <FixedBookingModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    courtId={selectedCourt.id}
+                />
+            )}
+            {selectedCourt && modalType === 'single' && (
                 <TimeSlotModal
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
-                    // timeslots={selectedCourt.timeslots}
                     courtId={selectedCourt.id}
                 />
             )}

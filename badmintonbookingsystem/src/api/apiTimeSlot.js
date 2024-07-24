@@ -10,3 +10,13 @@ export const getTimeSlotbyCourtId = (courtId, chosenDate) => {
         }
     });
 };
+
+    
+export const getTimeSlotsByCourtId = (courtId) => {
+    const url = `${API_BASE_URL}/timeslots/court/${courtId}`;
+    return axios.get(url, {
+        headers: {
+            'accept': "*/*"
+        }
+    });
+};

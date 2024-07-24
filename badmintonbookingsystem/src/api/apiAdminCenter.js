@@ -42,6 +42,8 @@ export const createCenter = (name, location, operatingTime, closingTime, manager
   };
 
   export const updateCenter = (id, name, location, operatingTime, closingTime, managerId, imgAvatar, imageFiles) => {
+    
+    
     const formData = new FormData();
     formData.append('Name', name);
     formData.append('Location', location);
@@ -49,10 +51,13 @@ export const createCenter = (name, location, operatingTime, closingTime, manager
     formData.append('ClosingTime', closingTime);
     formData.append('ManagerId', managerId);
     formData.append('ImgAvatar', imgAvatar);
-    console.log(imageFiles);
+    
     imageFiles.forEach(file => {
       formData.append('ImageFiles', file);
     });
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+    }
     return axios.put(`${API_BASE_URL}/badminton-centers/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
