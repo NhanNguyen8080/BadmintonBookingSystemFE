@@ -159,7 +159,7 @@ export default function FixedBookingModal({ isOpen, onClose, courtId }) {
                 </Transition.Child>
 
                 <div className="fixed inset-0 overflow-y-auto">
-                    <div className="flex min-h-full items-center justify-center p-4 text-center">
+                    <div className="flex min-h-fit items-center justify-center p-4 text-center">
                         <Transition.Child
                             as={Fragment}
                             enter="ease-out duration-300"
@@ -235,7 +235,7 @@ export default function FixedBookingModal({ isOpen, onClose, courtId }) {
                                 </div>
 
                                 <div className="overflow-x-auto">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-[calc(60vh-4rem)] overflow-y-auto">
                                         {week.map(date => (
                                             <div key={date} className="p-2 border">
                                                 <h4 className="text-center font-bold">{date}</h4>
