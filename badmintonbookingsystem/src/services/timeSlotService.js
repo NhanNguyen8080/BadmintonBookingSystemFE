@@ -1,4 +1,4 @@
-import { getTimeSlotsByCourtId } from "../api/apiTimeSlot";
+import { changeTimeSlotStatus, getTimeSlotsByCourtId } from "../api/apiTimeSlot";
 
 export const fetchTimeSlotsByCourtId = async (courtId) => {
     try {
@@ -8,6 +8,15 @@ export const fetchTimeSlotsByCourtId = async (courtId) => {
         return data;
     } catch (error) {
         console.error('Error fetching time slots:', error);
+        throw error;
+    }
+};
+
+export const updateTimeSlotStatus = async (id) => {
+    try {
+        const response = await changeTimeSlotStatus(id);
+        return response.data;
+    } catch (error) {
         throw error;
     }
 };

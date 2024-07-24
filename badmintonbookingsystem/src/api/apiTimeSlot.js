@@ -10,3 +10,11 @@ export const getTimeSlotsByCourtId = (courtId) => {
         }
     });
 };
+
+export const changeTimeSlotStatus = (id) => {
+    return axios.put(`${API_BASE_URL}/timeslot-toggle/${id}`, {
+        headers: {
+            'accept': "*/*"
+        }
+    });
+};

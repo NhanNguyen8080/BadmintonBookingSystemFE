@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { fetchBadmintonCenterByManager } from "../../../services/centerService";
 import { fetchCourtsByCenterId } from "../../../services/courtService";
-import { fetchTimeSlotsByCourtId } from "../../../services/timeSlotService";
+import { fetchTimeSlotsByCourtId, updateTimeSlotStatus } from "../../../services/timeSlotService";
 import CollapseHandMade from "../../CollapseHandMade";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faToggleOff, faToggleOn } from "@fortawesome/free-solid-svg-icons";
 
 export default function TimeSlots() {
     const [courts, setCourts] = useState([]);
@@ -10,12 +12,27 @@ export default function TimeSlots() {
     const [center, setCenter] = useState(null);
     const token = localStorage.getItem("token");
 
+    const handleChangeStatus = async (id, courtId) => {
+        try {
+            const updatedTimeSlot = await updateTimeSlotStatus(id);
+            setTimeSlots((prevTimeSlots) => ({
+                ...prevTimeSlots,
+                [courtId]: prevTimeSlots[courtId].map((timeSlot) =>
+                    timeSlot.id === updatedTimeSlot.id
+                        ? { ...timeSlot, isActive: updatedTimeSlot.isActive }
+                        : timeSlot
+                ),
+            }));
+        } catch (error) {
+            console.error('Error changing court status:', error);
+        }
+    };
+
     useEffect(() => {
         const fetchCenterData = async () => {
             try {
                 if (token) {
                     const centerData = await fetchBadmintonCenterByManager(token);
-                    console.log('Fetched Center Data:', centerData);
                     setCenter(centerData);
                 }
             } catch (error) {
@@ -31,7 +48,6 @@ export default function TimeSlots() {
                 try {
                     const courtsData = await fetchCourtsByCenterId(center[0].id);
                     setCourts(courtsData);
-                    console.log('Fetched Courts Data:', courtsData);
                 } catch (error) {
                     console.log(error);
                 }
@@ -47,13 +63,13 @@ export default function TimeSlots() {
                 setTimeSlots((prevTimeSlots) => ({
                     ...prevTimeSlots,
                     [courtId]: timeSlotsData.map(slot => ({
-                        // courtName: courts.find(court => court.id === courtId)?.courtName,
+                        id: slot.id,
                         startTime: slot.startTime,
                         endTime: slot.endTime,
                         price: slot.price,
+                        isActive: slot.isActive,
                     })),
                 }));
-                console.log(`Fetched Time Slots Data for court ${courtId}:`, timeSlotsData);
             } catch (error) {
                 console.log(error);
             }
@@ -64,19 +80,83 @@ export default function TimeSlots() {
         });
     }, [courts]);
 
-    useEffect(() => {
-        console.log('Courts State Updated:', courts);
-    }, [courts]);
-
     return (
         <div className="p-4 bg-gray-200 rounded-lg space-y-4">
+            <style>
+                {`
+                    .time-slot-card {
+                        background-color: #ffffff;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                        transition: transform 0.2s;
+                    }
+
+                    .time-slot-card:hover {
+                        transform: translateY(-4px);
+                    }
+
+                    .time-slot-info {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    }
+
+                    .time-slot-details {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 4px;
+                    }
+
+                    .status-toggle {
+                        display: flex;
+                        align-items: center;
+                    }
+
+                    .status-button {
+                        background: none;
+                        border: none;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+
+                    .status-button:hover {
+                        opacity: 0.8;
+                    }
+
+                    .status-button:focus {
+                        outline: none;
+                    }
+                `}
+            </style>
             {courts.map((court) => (
                 <CollapseHandMade
                     key={court.id}
                     title={court.courtName}
-                    answers={(timeSlots[court.id] || []).map(slot =>
-                        `Start Time: ${slot.startTime}, End Time: ${slot.endTime}, Price: ${slot.price}`
-                    )}
+                    answers={(timeSlots[court.id] || []).map(slot => (
+                        <div key={slot.id} className="time-slot-card p-4 mb-4">
+                            <div className="time-slot-info">
+                                <div className="time-slot-details">
+                                    <span><strong>Start Time:</strong> {slot.startTime}</span>
+                                    <span><strong>End Time:</strong> {slot.endTime}</span>
+                                    <span><strong>Price:</strong> {slot.price}</span>
+                                </div>
+                                <div className='status-toggle'>
+                                    <button onClick={() => handleChangeStatus(slot.id, court.id)}
+                                        title={slot.isActive ? "Active" : "Inactive"}
+                                        className="status-button"
+                                    >
+                                        <FontAwesomeIcon
+                                            icon={slot.isActive ? faToggleOn : faToggleOff}
+                                            color={slot.isActive ? "#07881d" : "#8a0505"}
+                                            size="2x"
+                                        />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 />
             ))}
         </div>

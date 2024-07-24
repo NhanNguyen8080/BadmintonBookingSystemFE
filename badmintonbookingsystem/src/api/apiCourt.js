@@ -25,7 +25,7 @@ export const createCourt = (CourtName, CenterId, ImageFiles) => {
     console.log(CenterId);
     console.log(ImageFiles);
     formData.append('CourtName', CourtName);
-    formData.append('CenterId ', CenterId);
+    formData.append('CenterId', CenterId);
     ImageFiles.forEach(file => {
         formData.append('ImageFiles', file);
     });
