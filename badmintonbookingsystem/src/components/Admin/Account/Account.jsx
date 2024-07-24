@@ -1,90 +1,91 @@
 import React, { useEffect, useState } from 'react';
-import { fetchAccounts } from '../../../services/accountService';
-import { faCircle } from '@fortawesome/free-solid-svg-icons';
+import { fetchAccounts, updateUserStatus } from '../../../services/accountService';
+import { faPenToSquare, faToggleOff, faToggleOn, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import AddAccountModal from './AddAccountModal';
+import UpdateAccountModal from './UpdateAccountModal';
 
 export default function Accounts() {
     const [users, setUsers] = useState([]);
-    // const [isAddModalOpen, setAddModalOpen] = useState(false);
-    // const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
+    const [isAddModalOpen, setAddModalOpen] = useState(false);
+    const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [currentPage, setCurrentPage] = useState(parseInt(localStorage.getItem('currentPage')) || 1);
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const usersData = await fetchAccounts();
+                const usersData = await fetchAccounts(currentPage);
                 setUsers(usersData);
+                setTotalPages(10);
             } catch (error) {
                 console.log(error);
             }
         };
-
+        localStorage.setItem('currentPage', currentPage);
         fetchData();
-    }, []);
+    }, [currentPage]);
 
-    // const handleDeleteUser = async (id) => {
-    //     if (id === userId) {
-    //         alert('You cannot delete yourself!');
-    //         return;
-    //     }
 
-    //     if (window.confirm('Are you sure you want to delete this user?')) {
-    //         try {
-    //             await deleteExistingUser(id);
-    //             setUsers((prevUsers) =>
-    //                 prevUsers.filter((user) => user._id !== id),
-    //             );
-    //         } catch (error) {
-    //             console.error('There was an error deleting the user!', error);
-    //         }
-    //     }
-    // };
+    const handleChangeStatus = async (id) => {
+        try {
+            const updatedUser = await updateUserStatus(id);
+            setUsers((prevUsers) =>
+                prevUsers.map((user) =>
+                    user.id === updatedUser.id ? { ...user, isActive: updatedUser.isActive } : user
+                )
+            );
+        } catch (error) {
+            console.error('Error changing center status:', error);
+        }
+    };
+    const handleOpenAddModal = () => {
+        setAddModalOpen(true);
+    };
 
-    // const handleOpenAddModal = () => {
-    //     setAddModalOpen(true);
-    // };
+    const handleCloseAddModal = () => {
+        setAddModalOpen(false);
+    };
 
-    // const handleCloseAddModal = () => {
-    //     setAddModalOpen(false);
-    // };
+    const onAccountAdded = (newUser) => {
+        setUsers((prevUsers) => [...prevUsers, newUser]);
+    };
 
-    // const handleOpenUpdateModal = (user) => {
-    //     setSelectedUser(user);
-    //     setUpdateModalOpen(true);
-    // };
+    const handleOpenUpdateModal = (user) => {
+        setSelectedUser(user);
+        setUpdateModalOpen(true);
+    };
 
-    // const handleCloseUpdateModal = () => {
-    //     setUpdateModalOpen(false);
-    //     setSelectedUser(null);
-    // };
+    const handleCloseUpdateModal = () => {
+        setUpdateModalOpen(false);
+        setSelectedUser(null);
+    };
 
-    // const handleUserAdded = (newUser) => {
-    //     setUsers((prevUsers) => [...prevUsers, newUser]);
-    // };
 
-    // const handleUserUpdated = (updatedUser) => {
-    //     setUsers((prevUsers) =>
-    //         prevUsers.map((user) =>
-    //             user._id === updatedUser._id ? updatedUser : user,
-    //         ),
-    //     );
-    // };
 
-    // const indexOfLastUser = currentPage * usersPerPage;
-    // const indexOfFirstUser = indexOfLastUser - usersPerPage;
-    // const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+    const handleUserUpdated = (updatedUser) => {
+        setUsers((prevUsers) =>
+            prevUsers.map((user) =>
+                user.id === updatedUser.id ? updatedUser : user,
+            ),
+        );
+    };
 
-    // const nextPage = () => {
-    //     if (currentPage < Math.ceil(users.length / usersPerPage)) {
-    //         setCurrentPage(currentPage + 1);
-    //     }
-    // };
 
-    // const prevPage = () => {
-    //     if (currentPage > 1) {
-    //         setCurrentPage(currentPage - 1);
-    //     }
-    // };
+    const nextPage = () => {
+        if (currentPage < totalPages) {
+            const page = currentPage + 1;
+            setCurrentPage(page);
+        }
+    };
+
+    const prevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
 
     return (
         <>
@@ -92,7 +93,7 @@ export default function Accounts() {
                 <div className='w-5/6 space-y-4 p-4'>
                     <button
                         className='p-4 bg-blue-500 text-white px-2 py-1 rounded'
-                    //onClick={handleOpenAddModal}
+                        onClick={handleOpenAddModal}
                     >
                         Add New
                     </button>
@@ -140,32 +141,30 @@ export default function Accounts() {
                                     {user.authorities}
                                 </div>
                                 <div className='text-center'>
-                                    <FontAwesomeIcon
-                                        icon={faCircle}
-                                        beat
-                                        style={{ color: user.isActive ? "#63E6BE" : "#FF6B6B" }}
-                                    />
+                                    <button onClick={() => handleChangeStatus(user.id)}
+                                        title={user.isActive ? "Active" : "InActive"}
+                                    >
+                                        <FontAwesomeIcon
+                                            icon={user.isActive ? faToggleOn : faToggleOff}
+                                            color="#07881d"
+                                        />
+                                    </button>
                                 </div>
                                 <div className='space-x-4 flex items-center justify-center'>
                                     <button
-                                        // onClick={() =>
-                                        //     handleOpenUpdateModal(user)
-                                        // }
-                                        className='bg-blue-500 text-white px-2 py-1 rounded'>
-                                        Update
+                                        onClick={() => handleOpenUpdateModal(user)}
+                                    >
+                                        <FontAwesomeIcon icon={faPenToSquare} style={{ color: "#B197FC", }} />
                                     </button>
                                     <button
-                                        className='bg-red-500 text-white px-2 py-1 rounded'
-                                    // onClick={() =>
-                                    //     handleDeleteUser(user._id)
-                                    // }
+                                    //onClick={() => handleOpenUpdateModal(user)}
                                     >
-                                        Delete
+                                        <FontAwesomeIcon icon={faTrash} style={{ color: "#8a0505" }} />
                                     </button>
                                 </div>
                             </div>
                         ))}
-                        {/* <div className='flex justify-between p-2 bg-zinc-300'>
+                        <div className='flex justify-between p-2 bg-zinc-300'>
                             <button
                                 className='bg-gray-500 text-white px-2 py-1 rounded'
                                 onClick={prevPage}
@@ -174,34 +173,32 @@ export default function Accounts() {
                                 Previous
                             </button>
                             <span className='text-lg font-bold'>
-                                Page {currentPage} of{' '}
-                                {Math.ceil(users.length / usersPerPage)}
+                                Page {currentPage}
                             </span>
                             <button
                                 className='bg-gray-500 text-white px-2 py-1 rounded'
                                 onClick={nextPage}
                                 disabled={
-                                    currentPage ===
-                                    Math.ceil(users.length / usersPerPage)
+                                    currentPage === 15
                                 }
                             >
                                 Next
                             </button>
-                        </div> */}
+                        </div>
                     </div>
                 </div>
-                {/* <AddUserModal
+                <AddAccountModal
                     isOpen={isAddModalOpen}
                     onClose={handleCloseAddModal}
-                    onUserAdded={handleUserAdded}
+                    onAccountAdded={onAccountAdded}
                 />
-                <UpdateUserModal
+                <UpdateAccountModal
                     isOpen={isUpdateModalOpen}
                     onClose={handleCloseUpdateModal}
-                    userId={selectedUser?._id}
+                    userId={selectedUser?.id}
                     initialUserData={selectedUser}
-                    onUserUpdated={handleUserUpdated}
-                /> */}
+                    onAccountUpdated={handleUserUpdated}
+                />
             </div>
         </>
     );

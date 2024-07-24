@@ -1,5 +1,5 @@
 
-import { changeStatusCenter, createCenter, getAllCenters, manageCenters, updateCenter } from "../api/apiManagerCenter";
+import { changeStatusCenter, createCenter, getAllCenters, manageCenters, updateCenter } from "../api/apiAdminCenter";
 import { getBadmintonCenters } from "../api/apiBadmintonCenter";
 export const fetchAllCenters = async (currentPage) => {
     try {
@@ -38,16 +38,12 @@ export const addNewCenter = async (centerData, imgAvatar, imageFiles) => {
   }
 };
 
-export const updateExistingCenter= async (id, centerData, imgAvatar, imageFiles) => {
+export const updateExistingCenter= async (id, name, location, operatingTime, closingTime, managerId, imgAvatar, imageFiles) => {
   console.log(imageFiles);
   try {
     const response = await updateCenter(
       id,
-      centerData.name,
-      centerData.location,
-      centerData.operatingTime,
-      centerData.closingTime,
-      centerData.managerId,
+      name, location, operatingTime, closingTime, managerId,
       imgAvatar,
       imageFiles
     );
