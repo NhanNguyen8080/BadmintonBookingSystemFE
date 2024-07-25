@@ -36,7 +36,7 @@ export default function SidebarAdmin() {
       </div>
     );
   }
-
+  
   return (
     <div className="w-1/6 bg-gray-100 h-full flex flex-col items-center py-5 px-5 shadow-lg">
       <ul className="list-none w-full">

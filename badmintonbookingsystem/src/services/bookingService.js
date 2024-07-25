@@ -1,4 +1,4 @@
-import { fixedBookingAPI, getBookingsByCenterId } from "../api/apiBooking";
+import { cancleBooking, cancleBookingDetail, checkoutApi, fixedBookingAPI, getBookingsByBookingId, getBookingsByCenterId, getBookingsByStatus } from "../api/apiBooking";
 import { singleBookingAPI } from "../api/apiBooking";
 
 export const singleBooking = async (listTimeSlotId, bookingDate) => {
@@ -36,7 +36,17 @@ export const fetchBookingsByCenterId = async (centerId) => {
         throw error;
     }
 };
-
+export const fetchBookingsByBookingId = async (bookingId) => {
+  try {
+      const response = await getBookingsByBookingId(bookingId);
+      const data = response.data;
+      console.log(data);
+      return data;
+  } catch (error) {
+      console.error('Error fetching bookings:', error);
+      throw error;
+  }
+};
 //   export const addNewCourt = async (centerData, imageFiles) => {
 //     try {
 //       const response = await createCourt(
@@ -53,3 +63,51 @@ export const fetchBookingsByCenterId = async (centerId) => {
 //       throw error;
 //     }
 //   };
+export const fetchBookingsByStatus = async () => {
+  try {
+      const response = await getBookingsByStatus();
+      const data = response.data;
+      console.log(data);
+      return data;
+  } catch (error) {
+      console.error('Error fetching bookings:', error);
+      throw error;
+  }
+};
+
+export const cancelBookingById = async (bookingId) => {
+  try {
+      const response = await cancleBooking(bookingId);
+      const data = response.data;
+      console.log(data);
+      return data;
+  } catch (error) {
+      console.error('Error fetching bookings:', error);
+      throw error;
+  }
+};
+
+export const cancelBookingDetailById = async (bookingDetailId) => {
+  try {
+      const response = await cancleBookingDetail(bookingDetailId);
+      const data = response.data;
+      console.log(data);
+      return data;
+  } catch (error) {
+      console.error('Error fetching bookings:', error);
+      throw error;
+  }
+};
+
+export const checkout = async (id) => {
+  try {
+      const response = await checkoutApi(id);
+      const data = response.data;
+      console.log(data);
+      return data;
+  } catch (error) {
+      console.error('Error fetching bookings:', error);
+      throw error;
+  }
+};
+

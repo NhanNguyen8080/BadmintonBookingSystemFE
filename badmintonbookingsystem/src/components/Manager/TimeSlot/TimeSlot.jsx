@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchBadmintonCenterByManager } from "../../../services/centerService";
 import { fetchCourtsByCenterId } from "../../../services/courtService";
-import { fetchTimeSlotsByCourtId } from "../../../services/timeSlotService";
+import { fetchTimeSlotsByCourtId } from "../../../services/timeslotService";
 import CollapseHandMade from "../../CollapseHandMade";
 
 export default function TimeSlots() {

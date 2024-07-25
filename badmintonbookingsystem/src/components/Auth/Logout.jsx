@@ -36,8 +36,10 @@ const Logout = () => {
     };
 
     return (
-        <button onClick={handleLogout} className="logout-button text-gray-700 transition-colors duration-300 rounded-md hover:text-black hover:bg-gray-100 py-2 px-4">
-            Logout
+        <button onClick={handleLogout}
+        title="Logout"
+        className="logout-button text-gray-700 transition-colors duration-300 rounded-md hover:text-black hover:bg-gray-100 py-2 px-4">
+           <FontAwesomeIcon icon={faRightFromBracket} />
         </button>
     );
 };

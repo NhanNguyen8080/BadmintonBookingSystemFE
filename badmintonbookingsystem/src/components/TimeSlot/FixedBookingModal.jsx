@@ -4,7 +4,7 @@ import { format, eachDayOfInterval, isBefore } from "date-fns";
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser } from "../../redux/slices/authSlice";
 import { fixedBooking } from "../../services/bookingService";
-import { fetchTimeSlot } from "../../services/timeSlotService";
+import { fetchTimeSlot } from "../../services/timeslotService";
 
 export default function FixedBookingModal({ isOpen, onClose, courtId }) {
     const [fromDate, setFromDate] = useState(new Date());

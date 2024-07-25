@@ -3,16 +3,26 @@ import SignInModal from '../components/Auth/SignInModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser } from '../redux/slices/authSlice';
 import Logout from '../components/Auth/Logout';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faListCheck } from '@fortawesome/free-solid-svg-icons';
+import BookingsList from '../components/Payment/BookingsList';
+import { Link, useNavigate } from 'react-router-dom';
 const Header = () => {
     const user = useSelector(selectUser);
     const dispatch = useDispatch();
 
+    const navigate = useNavigate();
+
+    const handleNavigate = () => {
+        navigate('/bookings');
+    };
 
     return (
         <header style={styles.header}>
             <div style={styles.logo}>
-                <img src="/images/logo.png" alt="Logo" style={styles.logoImage} />
+                <Link to="/">
+                    <img src="/images/logo.png" alt="Logo" style={styles.logoImage} />
+                </Link>
             </div>
             {user ? (
                 <>
@@ -20,6 +30,11 @@ const Header = () => {
                     <div className="user-info">
                         <i className="user-icon">👤</i>
                         <span>Xin chào! {user.unique_name}  </span>
+                        <button onClick={handleNavigate}>
+                            <span>
+                                <FontAwesomeIcon icon={faListCheck} />
+                            </span>
+                        </button>
                         <Logout />
                         {/* <button
                             className="logout-button text-gray-700 transition-colors duration-300 rounded-md hover:text-black hover:bg-gray-100 py-2 px-4"
