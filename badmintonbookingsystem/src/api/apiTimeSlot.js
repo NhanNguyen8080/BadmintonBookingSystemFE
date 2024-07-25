@@ -11,7 +11,7 @@ export const getTimeSlotbyCourtId = (courtId, chosenDate) => {
     });
 };
 
-    
+
 export const getTimeSlotsByCourtId = (courtId) => {
     const url = `${API_BASE_URL}/timeslots/court/${courtId}`;
     return axios.get(url, {
@@ -26,5 +26,18 @@ export const changeTimeSlotStatus = (id) => {
         headers: {
             'accept': "*/*"
         }
+    });
+};
+
+export const addTimeSlot = (timeSlotDTO) => {
+    console.log(timeSlotDTO.courtId);
+    console.log(timeSlotDTO.startTime);
+    console.log(timeSlotDTO.endTime);
+    console.log(timeSlotDTO.price);
+
+    return axios.post(`${API_BASE_URL}/timeslots`, timeSlotDTO, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
     });
 };

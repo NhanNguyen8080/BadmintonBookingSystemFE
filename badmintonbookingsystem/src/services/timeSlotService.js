@@ -1,4 +1,4 @@
-import { getTimeSlotsByCourtId, getTimeSlotbyCourtId, changeTimeSlotStatus } from "../api/apiTimeSlot";
+import { getTimeSlotsByCourtId, getTimeSlotbyCourtId, changeTimeSlotStatus, addTimeSlot } from "../api/apiTimeSlot";
 
 export const fetchTimeSlot = async (courtId, chosenDate) => {
     try {
@@ -33,19 +33,14 @@ export const updateTimeSlotStatus = async (id) => {
     }
 };
 
-//   export const addNewCourt = async (centerData, imageFiles) => {
-//     try {
-//       const response = await createCourt(
-//         centerData.name,
-//         centerData.location,
-//         centerData.operatingTime,
-//         centerData.closingTime,
-//         centerData.managerId,
-//         imageFiles
-//       );
-//       return response.data;
-//     } catch (error) {
-//       console.error('Error creating center:', error);
-//       throw error;
-//     }
-//   };
+export const addNewTimeSlot = async (timeSlotCreateDTO) => {
+    try {
+        const response = await addTimeSlot(
+            timeSlotCreateDTO
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Error creating center:', error);
+        throw error;
+    }
+};

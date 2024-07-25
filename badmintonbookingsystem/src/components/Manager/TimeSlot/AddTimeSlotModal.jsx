@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { addNewCourt } from '../../../services/courtService';
+import { fetchCourtsByCenterId } from '../../../services/courtService';
 import { fetchBadmintonCenterByManager } from '../../../services/centerService';
+import { addNewTimeSlot } from '../../../services/timeSlotService';
 
-
-const AddCourtModal = ({ isOpen, onClose, onCourtAdded }) => {
+const AddTimeSlotModal = ({ isOpen, onClose, onTimeSlotAdded }) => {
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const [imgAvatar, setImgAvatar] = useState(null);
-    const [imageFiles, setImageFiles] = useState([]);
+    const [courts, setCourts] = useState([]);
     const [center, setCenter] = useState(null);
     const token = localStorage.getItem("token");
 
@@ -16,9 +15,7 @@ const AddCourtModal = ({ isOpen, onClose, onCourtAdded }) => {
             try {
                 if (token) {
                     const centerData = await fetchBadmintonCenterByManager(token);
-                    console.log('Fetched Center Data:', centerData);
                     setCenter(centerData);
-                    console.log(center)
                 }
             } catch (error) {
                 console.log(error);
@@ -28,32 +25,44 @@ const AddCourtModal = ({ isOpen, onClose, onCourtAdded }) => {
     }, [token]);
 
     useEffect(() => {
-        console.log('Center State Updated:', center);
+        const fetchCourtsData = async () => {
+            if (center) {
+                try {
+                    const courtsData = await fetchCourtsByCenterId(center[0].id);
+                    setCourts(courtsData);
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        };
+        if (center) {
+            fetchCourtsData();
+        }
     }, [center]);
 
+    const parseTime = (timeStr) => {
+        const date = new Date();
+        const timeParts = timeStr.split(':');
+        date.setHours(timeParts[0], timeParts[1], timeParts[2] || 0);
+        return date.toTimeString().slice(0, 8);
+    };
+
     const onSubmit = async (data) => {
-        const courtName = data.courtName;
-        const files = imageFiles.length > 0 ? Array.from(imageFiles) : [];
+        const { courtId, startTime, endTime, price } = data;
 
         try {
-            const response = await addNewCourt(
-                courtName,
-                center[0].id,
-                files
-            );
+            const timeSlotCreateDTO = {
+                courtId,
+                startTime: parseTime(startTime),
+                endTime: parseTime(endTime),
+                price,
+            };
+            const response = await addNewTimeSlot(timeSlotCreateDTO);
+            onTimeSlotAdded(response, courtId);
             onClose();
-            onCourtAdded(response);
         } catch (error) {
-            console.error('Error creating Court:', error);
+            console.error('Error creating TimeSlot:', error);
         }
-    };
-
-    const handleImgAvatarChange = (e) => {
-        setImgAvatar(e.target.files[0]); // Lưu ImgAvatar khi người dùng chọn file
-    };
-
-    const handleImageFilesChange = (e) => {
-        setImageFiles([...e.target.files]); // Lưu danh sách ImageFiles khi người dùng chọn file
     };
 
     if (!isOpen) return null;
@@ -61,33 +70,49 @@ const AddCourtModal = ({ isOpen, onClose, onCourtAdded }) => {
     return (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
             <div className="bg-white w-1/3 p-6 rounded shadow-lg">
-                <h2 className="text-2xl mb-4">Tạo mới sân</h2>
+                <h2 className="text-2xl mb-4">Tạo timeslot</h2>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="mb-4">
-                        <label className="block mb-1">Tên sân</label>
-                        <input
-                            type="text"
-                            {...register('courtName', { required: 'Name is required' })}
+                        <label className="block mb-1">Court</label>
+                        <select
+                            {...register('courtId', { required: 'Court is required' })}
                             className="w-full border px-2 py-1 rounded"
-                        />
-                        {errors.name && <p className="text-red-500">{errors.name.message}</p>}
+                        >
+                            <option value="">Select court</option>
+                            {(courts || []).map((court) => (
+                                <option key={court.id} value={court.id}>
+                                    {court.courtName}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.courtId && <p className="text-red-500">{errors.courtId.message}</p>}
                     </div>
-                    {/* <div className="mb-4">
-                        <label className="block mb-1">Ảnh sân</label>
-                        <input
-                            type="file"
-                            onChange={handleImgAvatarChange}
-                            className="w-full border px-2 py-1 rounded"
-                        />
-                    </div> */}
                     <div className="mb-4">
-                        <label className="block mb-1">Ảnh sân</label>
+                        <label className="block mb-1">Start Time</label>
                         <input
-                            type="file"
-                            onChange={handleImageFilesChange}
+                            type="time"
+                            {...register('startTime', { required: 'Start Time is required' })}
                             className="w-full border px-2 py-1 rounded"
-                            multiple
                         />
+                        {errors.startTime && <p className="text-red-500">{errors.startTime.message}</p>}
+                    </div>
+                    <div className="mb-4">
+                        <label className="block mb-1">End Time</label>
+                        <input
+                            type="time"
+                            {...register('endTime', { required: 'End Time is required' })}
+                            className="w-full border px-2 py-1 rounded"
+                        />
+                        {errors.endTime && <p className="text-red-500">{errors.endTime.message}</p>}
+                    </div>
+                    <div className="mb-4">
+                        <label className="block mb-1">Price</label>
+                        <input
+                            type="number"
+                            {...register('price', { required: 'Price is required' })}
+                            className="w-full border px-2 py-1 rounded"
+                        />
+                        {errors.price && <p className="text-red-500">{errors.price.message}</p>}
                     </div>
                     <div className="flex justify-end">
                         <button
@@ -107,4 +132,4 @@ const AddCourtModal = ({ isOpen, onClose, onCourtAdded }) => {
     );
 };
 
-export default AddCourtModal;
+export default AddTimeSlotModal;

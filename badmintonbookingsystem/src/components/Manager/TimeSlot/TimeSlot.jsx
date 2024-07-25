@@ -5,12 +5,14 @@ import { fetchTimeSlotsByCourtId, updateTimeSlotStatus } from "../../../services
 import CollapseHandMade from "../../CollapseHandMade";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faToggleOff, faToggleOn } from "@fortawesome/free-solid-svg-icons";
+import AddTimeSlotModal from "./AddTimeSlotModal";
 
 export default function TimeSlots() {
     const [courts, setCourts] = useState([]);
     const [timeSlots, setTimeSlots] = useState({});
     const [center, setCenter] = useState(null);
     const token = localStorage.getItem("token");
+    const [isAddModalOpen, setAddModalOpen] = useState(false);
 
     const handleChangeStatus = async (id, courtId) => {
         try {
@@ -56,29 +58,41 @@ export default function TimeSlots() {
         fetchCourtsData();
     }, [center]);
 
-    useEffect(() => {
-        const fetchTimeSlotsData = async (courtId) => {
-            try {
-                const timeSlotsData = await fetchTimeSlotsByCourtId(courtId);
-                setTimeSlots((prevTimeSlots) => ({
-                    ...prevTimeSlots,
-                    [courtId]: timeSlotsData.map(slot => ({
-                        id: slot.id,
-                        startTime: slot.startTime,
-                        endTime: slot.endTime,
-                        price: slot.price,
-                        isActive: slot.isActive,
-                    })),
-                }));
-            } catch (error) {
-                console.log(error);
-            }
-        };
+    const fetchTimeSlotsData = async (courtId) => {
+        try {
+            const timeSlotsData = await fetchTimeSlotsByCourtId(courtId);
+            setTimeSlots((prevTimeSlots) => ({
+                ...prevTimeSlots,
+                [courtId]: timeSlotsData.map(slot => ({
+                    id: slot.id,
+                    startTime: slot.startTime,
+                    endTime: slot.endTime,
+                    price: slot.price,
+                    isActive: slot.isActive,
+                })),
+            }));
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
+    useEffect(() => {
         courts.forEach((court) => {
             fetchTimeSlotsData(court.id);
         });
     }, [courts]);
+
+    const handleOpenAddModal = () => {
+        setAddModalOpen(true);
+    };
+
+    const handleCloseAddModal = () => {
+        setAddModalOpen(false);
+    };
+
+    const handleTimeSlotAdded = (newTimeSlot, courtId) => {
+        fetchTimeSlotsData(courtId);
+    };
 
     return (
         <div className="p-4 bg-gray-200 rounded-lg space-y-4">
@@ -130,6 +144,12 @@ export default function TimeSlots() {
                     }
                 `}
             </style>
+            <button
+                className='p-4 bg-blue-500 text-white px-2 py-1 rounded'
+                onClick={handleOpenAddModal}
+            >
+                Tạo mới
+            </button>
             {courts.map((court) => (
                 <CollapseHandMade
                     key={court.id}
@@ -159,6 +179,11 @@ export default function TimeSlots() {
                     ))}
                 />
             ))}
+            <AddTimeSlotModal
+                isOpen={isAddModalOpen}
+                onClose={handleCloseAddModal}
+                onTimeSlotAdded={handleTimeSlotAdded}
+            />
         </div>
     );
 }
