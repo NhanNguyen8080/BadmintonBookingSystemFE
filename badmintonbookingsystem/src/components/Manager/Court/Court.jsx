@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faToggleOff, faToggleOn, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { fetchCourtsByCenterId, updateCourtStatus } from "../../../services/courtService";
 import AddCourtModal from "./AddCourtModal";
+import UpdateCourtModal from "./UpdateCourtModal";
 
 export default function Courts() {
     const [courts, setCourts] = useState([]);
@@ -12,7 +13,7 @@ export default function Courts() {
     const [currentPage, setCurrentPage] = useState(parseInt(localStorage.getItem('currentPage')) || 1);
     const [totalPages, setTotalPages] = useState(1);
     const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
-    const [selectedCenter, setSelectedCenter] = useState(null);
+    const [selectedCourt, setSelectedCourt] = useState(null);
     const token = localStorage.getItem("token");
 
     const courtsPerPage = 5; // Adjust the number of courts to display per page as needed
@@ -60,6 +61,24 @@ export default function Courts() {
     const handleCourtAdded = (newCourt) => {
         setCourts((prevCourts) => [...prevCourts, newCourt]);
         setTotalPages(Math.ceil((courts.length + 1) / courtsPerPage)); // Update total pages after adding a new court
+    };
+
+    const handleOpenUpdateModal = (court) => {
+        setUpdateModalOpen(true);
+        setSelectedCourt(court);
+    };
+
+    const handleCloseUpdateModal = () => {
+        setUpdateModalOpen(false);
+        setSelectedCourt(null);
+    };
+
+    const handleCourtUpdated = (updatedCourt) => {
+        setCourts((prevCourts) =>
+            prevCourts.map((court) =>
+                court.id === updatedCourt.id ? updatedCourt : court,
+            ),
+        );
     };
 
     const nextPage = () => {
@@ -149,8 +168,11 @@ export default function Courts() {
                                     </button>
                                 </div>
                                 <div className='flex items-center justify-center'>
-                                    <button>
-                                        <FontAwesomeIcon icon={faPenToSquare} style={{ color: "#8a0505" }} size="2x" />
+                                    <button onClick={() => handleOpenUpdateModal(court)}>
+                                        <FontAwesomeIcon
+                                            icon={faPenToSquare}
+                                            style={{ color: "#B197FC" }}
+                                        />
                                     </button>
                                 </div>
                             </div>
@@ -180,6 +202,13 @@ export default function Courts() {
                     isOpen={isAddModalOpen}
                     onClose={handleCloseAddModal}
                     onCourtAdded={handleCourtAdded}
+                />
+                <UpdateCourtModal
+                    isOpen={isUpdateModalOpen}
+                    onClose={handleCloseUpdateModal}
+                    courtId={selectedCourt?.id}
+                    initialCourtData={selectedCourt}
+                    onCourtUpdated={handleCourtUpdated}
                 />
             </div>
         </>

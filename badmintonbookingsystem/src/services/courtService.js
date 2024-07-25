@@ -1,4 +1,4 @@
-import { changeStatusCourt, createCourt, getCourtsByCenterId } from "../api/apiCourt";
+import { apiUpdateCourt, changeStatusCourt, createCourt, getCourtsByCenterId } from "../api/apiCourt";
 
 export const fetchCourtsByCenterId = async (centerId) => {
   try {
@@ -34,3 +34,17 @@ export const addNewCourt = async (courtName, centerId, imageFiles) => {
     throw error;
   }
 };
+
+export const updateCourt = async (id, courtName, imageFiles) => {
+  console.log(imageFiles);
+  try {
+    const response = await apiUpdateCourt(
+      id,
+      courtName,
+      imageFiles
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}

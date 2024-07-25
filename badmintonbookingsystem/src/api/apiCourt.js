@@ -36,3 +36,22 @@ export const createCourt = (CourtName, CenterId, ImageFiles) => {
         },
     });
 };
+
+export const apiUpdateCourt = (id, courtName, imageFiles) => {
+
+
+    const formData = new FormData();
+    formData.append('CourtName', courtName);
+
+    imageFiles.forEach(file => {
+        formData.append('ImageFiles', file);
+    });
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+    }
+    return axios.put(`${API_BASE_URL}/courts/${id}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+};
