@@ -4,7 +4,7 @@ import { format, addDays, subDays, isBefore } from "date-fns";
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser } from "../../redux/slices/authSlice";
 import { singleBooking } from "../../services/bookingService";
-import { fetchTimeSlot } from "../../services/timeslotService";
+import { fetchTimeSlot } from "../../services/timeSlotService";
 
 
 export default function TimeSlotModal({ isOpen, onClose, courtId }) {
