@@ -26,6 +26,17 @@ export const fixedBookingAPI = (bookingData) => {
     });
 };
 
+export const flexBookingAPI = (bookings) => {
+    const url = `${API_BASE_URL}/bookings/flex-booking`;
+    return axios.post(url, bookings, {
+        headers: {
+            'accept': "*/*",
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    });
+};
+
 export const getBookingsByCenterId = (centerId) => {
     const url = `${API_BASE_URL}/bookings/court-reservation/center/${centerId}`;
     return axios.get(url, {

@@ -8,6 +8,7 @@ import { Link, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getBadmintonCenterById } from '../api/apiBadmintonCenter';
 import FixedBookingModal from '../components/TimeSlot/FixedBookingModal';
+import FlexBooking from '../components/TimeSlot/FlexBooking';
 
 const perPage = 9;
 
@@ -108,9 +109,15 @@ const CourtList = () => {
                                 />
                             </div>
                         </div>
-                        <div className="flex justify-between">
+                        <div className="space-y-3">
                             <h2 className="text-xl font-semibold text-gray-800">{court.courtName}</h2>
-                            <div className="space-x-5">
+                            <div className="space-x-5 flex justify-between">
+                                <button
+                                    className="rounded bg-blue-500 text-white p-2"
+                                    onClick={() => handleCourtClick(court.id, 'flex')}
+                                >
+                                    Flex Booking
+                                </button>
                                 <button
                                     className="rounded bg-blue-500 text-white p-2"
                                     onClick={() => handleCourtClick(court.id, 'fixed')}
@@ -147,6 +154,13 @@ const CourtList = () => {
                     <FontAwesomeIcon icon={faChevronRight} />
                 </button>
             </div>
+            {selectedCourt && modalType === 'flex' && (
+                <FlexBooking
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    courtId={selectedCourt.id}
+                />
+            )}
             {selectedCourt && modalType === 'fixed' && (
                 <FixedBookingModal
                     isOpen={isModalOpen}

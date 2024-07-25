@@ -1,4 +1,4 @@
-import { cancleBooking, cancleBookingDetail, checkoutApi, fixedBookingAPI, getBookingsByBookingId, getBookingsByCenterId, getBookingsByStatus } from "../api/apiBooking";
+import { cancleBooking, cancleBookingDetail, checkoutApi, fixedBookingAPI, flexBookingAPI, getBookingsByBookingId, getBookingsByCenterId, getBookingsByStatus } from "../api/apiBooking";
 import { singleBookingAPI } from "../api/apiBooking";
 
 export const singleBooking = async (listTimeSlotId, bookingDate) => {
@@ -21,6 +21,16 @@ export const fixedBooking = async (bookingData) => {
     return data;
   } catch (error) {
     console.error('Error fetching booking:', error);
+    throw error;
+  }
+};
+
+export const flexBooking = async (bookings) => {
+  try {
+    const response = await flexBookingAPI(bookings);
+    return response.data;
+  } catch (error) {
+    console.error('Error booking:', error);
     throw error;
   }
 };
