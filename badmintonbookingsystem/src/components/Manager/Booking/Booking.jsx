@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchBadmintonCenterByManager } from "../../../services/centerService";
 import { fetchSearchedBookings } from "../../../services/bookingService";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faToggleOff, faToggleOn, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { changeBookingStatus } from "../../../services/bookingService";
 
 export default function Bookings() {
     const [bookings, setBookings] = useState([]);
@@ -16,14 +15,13 @@ export default function Bookings() {
     const [totalPages, setTotalPages] = useState(1);
     const token = localStorage.getItem("token");
 
-    const bookingsPerPage = 5; // Adjust the number of bookings to display per page as needed
+    const bookingsPerPage = 5;
 
     useEffect(() => {
         const fetchCenterData = async () => {
             try {
                 if (token) {
                     const centerData = await fetchBadmintonCenterByManager(token);
-                    console.log('Fetched Center Data:', centerData);
                     setCenter(centerData);
                 }
             } catch (error) {
@@ -50,13 +48,12 @@ export default function Bookings() {
     }, [center, currentPage, fromDate, toDate, customerName, customerEmail, customerPhone]);
 
     const handleSearch = () => {
-        setCurrentPage(1); // Reset to the first page on new search
+        setCurrentPage(1);
     };
 
     const nextPage = () => {
         if (currentPage < totalPages) {
-            const page = currentPage + 1;
-            setCurrentPage(page);
+            setCurrentPage(currentPage + 1);
         }
     };
 
@@ -66,14 +63,36 @@ export default function Bookings() {
         }
     };
 
-    // Calculate the bookings to display on the current page
+    const updateStatus = async (id, status) => {
+        try {
+            console.log(id)
+            console.log(status)
+            await changeBookingStatus(id, status);
+            const updatedBookings = bookings.map(booking => booking.id === id ? { ...booking, reservationStatus: status } : booking);
+            setBookings(updatedBookings);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const statusOptions = [
+        { value: "NotCheckedIn", label: 'NotCheckedIn' },
+        { value: "CheckedIn", label: 'CheckedIn' },
+        { value: "Complete", label: 'Complete' },
+        { value: "Cancelled", label: 'Cancelled' },
+    ];
+
+    const getStatusLabel = (status) => {
+        const option = statusOptions.find(option => option.value === status);
+        return option ? option.label : '';
+    };
+
     const startIndex = (currentPage - 1) * bookingsPerPage;
     const bookingsToDisplay = bookings.slice(startIndex, startIndex + bookingsPerPage);
 
     return (
         <div className='flex justify-center'>
             <div className='w-full space-y-4 p-4'>
-                {/* New Header and Search Filter Section */}
                 <div className='bg-white rounded-lg overflow-hidden shadow-lg p-4'>
                     <div className='flex justify-center items-center mb-4'>
                         <h2 className='text-xl font-bold'>Các lịch đặt sân</h2>
@@ -138,7 +157,7 @@ export default function Bookings() {
                 </div>
 
                 <div className='bg-white rounded-lg overflow-hidden shadow-lg'>
-                    <div className='grid grid-cols-8 gap-4 items-center p-4 bg-gray-200'>
+                    <div className='grid grid-cols-9 gap-4 items-center p-4 bg-gray-200'>
                         <div className='text-center text-lg font-bold col-span-1'>Tên khách hàng</div>
                         <div className='text-center text-lg font-bold col-span-1'>Email</div>
                         <div className='text-center text-lg font-bold col-span-1'>Số điện thoại</div>
@@ -147,9 +166,10 @@ export default function Bookings() {
                         <div className='text-center text-lg font-bold col-span-1'>Bắt đầu</div>
                         <div className='text-center text-lg font-bold col-span-1'>Kết thúc</div>
                         <div className='text-center text-lg font-bold col-span-1'>Giá</div>
+                        <div className='text-center text-lg font-bold col-span-1'>Trạng Thái</div>
                     </div>
                     {bookingsToDisplay.map((booking) => (
-                        <div key={booking.id} className='grid grid-cols-8 gap-4 items-center p-4 border-b hover:bg-gray-100'>
+                        <div key={booking.id} className='grid grid-cols-9 gap-4 items-center p-4 border-b hover:bg-gray-100'>
                             <div className='text-center flex items-center justify-center col-span-1'>
                                 <label className='text-gray-600'>{booking.customerName}</label>
                             </div>
@@ -160,6 +180,18 @@ export default function Bookings() {
                             <div className='text-center flex items-center justify-center col-span-1'>{booking.startTime}</div>
                             <div className='text-center flex items-center justify-center col-span-1'>{booking.endTime}</div>
                             <div className='text-center flex items-center justify-center col-span-1'>{booking.slotPrice}</div>
+                            <div className='text-center flex items-center justify-center col-span-1'>
+                                <select
+                                    value={booking.reservationStatus}
+                                    onChange={(e) => updateStatus(booking.id, e.target.value)}
+                                    className='border rounded px-2 py-1'
+                                >
+                                    {statusOptions.map(option => (
+                                        <option key={option.value} value={option.value}>{option.label}</option>
+                                    ))}
+
+                                </select>
+                            </div>
                         </div>
                     ))}
                     <div className='flex justify-between p-4 bg-gray-200'>

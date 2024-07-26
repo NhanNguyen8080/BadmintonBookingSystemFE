@@ -136,3 +136,24 @@ export const checkoutApi = (id) => {
         }
     });
 };
+
+export const updateBookingStatus = (bookingId, status) => {
+    if (status === "NotCheckedIn") {
+        status = 0
+    }
+    if (status === "CheckedIn") {
+        status = 1
+    }
+    if (status === "Complete") {
+        status = 2
+    }
+    if (status === "NotCheckedIn") {
+        status = 3
+    }
+    const url = `${API_BASE_URL}/bookings/reservation/booking-detail/${bookingId}?status=${status}`;
+    return axios.put(url, {
+        headers: {
+            'accept': "*/*"
+        }
+    });
+};

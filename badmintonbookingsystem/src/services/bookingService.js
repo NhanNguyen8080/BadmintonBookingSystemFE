@@ -1,4 +1,4 @@
-import { cancleBooking, cancleBookingDetail, checkoutApi, fixedBookingAPI, flexBookingAPI, getBookingsByBookingId, getBookingsByCenterId, getBookingsByStatus, searchBookings } from "../api/apiBooking";
+import { cancleBooking, cancleBookingDetail, checkoutApi, fixedBookingAPI, flexBookingAPI, getBookingsByBookingId, getBookingsByCenterId, getBookingsByStatus, searchBookings, updateBookingStatus } from "../api/apiBooking";
 import { singleBookingAPI } from "../api/apiBooking";
 
 export const singleBooking = async (listTimeSlotId, bookingDate) => {
@@ -130,6 +130,18 @@ export const checkout = async (id) => {
     return data;
   } catch (error) {
     console.error('Error fetching bookings:', error);
+    throw error;
+  }
+};
+
+export const changeBookingStatus = async (bookingId, status) => {
+  try {
+    const response = await updateBookingStatus(bookingId, status);
+    const data = response.data;
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error('Error update booking status:', error);
     throw error;
   }
 };
