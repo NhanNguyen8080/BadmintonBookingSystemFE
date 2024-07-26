@@ -78,7 +78,7 @@ export default function Bookings() {
     const statusOptions = [
         { value: "NotCheckedIn", label: 'NotCheckedIn' },
         { value: "CheckedIn", label: 'CheckedIn' },
-        { value: "Complete", label: 'Complete' },
+        { value: "Completed", label: 'Completed' },
         { value: "Cancelled", label: 'Cancelled' },
     ];
 

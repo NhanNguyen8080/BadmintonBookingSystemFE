@@ -144,7 +144,7 @@ export const updateBookingStatus = (bookingId, status) => {
     if (status === "CheckedIn") {
         status = 1
     }
-    if (status === "Complete") {
+    if (status === "Completed") {
         status = 2
     }
     if (status === "NotCheckedIn") {
