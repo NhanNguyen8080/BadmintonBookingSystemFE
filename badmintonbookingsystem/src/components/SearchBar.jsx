@@ -1,35 +1,98 @@
 import React from 'react';
+import { useForm } from 'react-hook-form';
+import { fetchSearchBadmintonCenter } from '../services/centerService';
 
-const SearchBar = () => {
+const parseTime = (timeStr) => {
+    if (!timeStr) {
+        return '';
+    }
+    else {
+        const [hours, minutes, seconds] = timeStr.split(':').map(Number);
+        const date = new Date();
+        date.setHours(hours, minutes, seconds || 0);
+        return date.toTimeString().slice(0, 8);
+    }
+
+};
+
+const onSubmit = async (data) => {
+    const { location, operatingTime, closingTime } = data;
+
+    try {
+        console.log(location);
+        console.log(operatingTime);
+        console.log(closingTime);
+        const response = await fetchSearchBadmintonCenter(location,
+            parseTime(operatingTime),
+            parseTime(closingTime));
+        console.log(response);
+        // onTimeSlotAdded(response, courtId);
+    } catch (error) {
+        console.error('Error creating TimeSlot:', error);
+    }
+};
+
+const SearchBar = ({ onSearch }) => {
+    const { register, handleSubmit, formState: { errors } } = useForm();
+
+    const onSubmit = async (data) => {
+        const { location, operatingTime, closingTime } = data;
+
+        try {
+            const response = await fetchSearchBadmintonCenter(
+                location,
+                parseTime(operatingTime),
+                parseTime(closingTime)
+            );
+            onSearch(response); // Call the parent function with the search results
+        } catch (error) {
+            console.error('Error creating TimeSlot:', error);
+        }
+    };
     return (
-        <div style={styles.backgroundContainer}>
-            <div style={styles.searchBarContainer}>
-                <div style={styles.searchBar}>
-                    <div style={styles.inputGroup}>
-                        <span style={styles.icon}>📍</span>
-                        <div>
-                            <label style={styles.label}>Địa điểm</label>
-                            <input type="text" placeholder="Bạn muốn tìm sân ở đâu?" style={styles.input} />
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <div style={styles.backgroundContainer}>
+                <div style={styles.searchBarContainer}>
+                    <div style={styles.searchBar}>
+                        <div style={styles.inputGroup}>
+                            <span style={styles.icon}>📍</span>
+                            <div>
+                                <label style={styles.label}>Địa điểm</label>
+                                <input
+                                    type="text"
+                                    {...register('location')}
+                                    className="w-full border px-2 py-1 rounded"
+                                    placeholder="Bạn muốn tìm sân ở đâu?" style={styles.input} />
+                            </div>
                         </div>
-                    </div>
-                    <div style={styles.inputGroup}>
-                        <span style={styles.icon}>➡️</span>
-                        <div>
-                            <label style={styles.label}>Giờ hoạt động</label>
-                            <input type="text" placeholder="Bất kỳ" style={styles.input} />
+                        <div style={styles.inputGroup}>
+                            <span style={styles.icon}>➡️</span>
+                            <div>
+                                <label style={styles.label}>Giờ hoạt động</label>
+                                <input
+                                    type="time"
+                                    {...register('operatingTime')}
+                                    className="w-full border px-2 py-1 rounded"
+                                    placeholder="Bất kỳ" style={styles.input} />
+                            </div>
                         </div>
-                    </div>
-                    <div style={styles.inputGroup}>
-                        <span style={styles.icon}>⬅️</span>
-                        <div>
-                            <label style={styles.label}>Giờ kết thúc</label>
-                            <input type="text" placeholder="Bất kỳ" style={styles.input} />
+                        <div style={styles.inputGroup}>
+                            <span style={styles.icon}>⬅️</span>
+                            <div>
+                                <label style={styles.label}>Giờ đóng cửa</label>
+                                <input
+                                    type="time"
+                                    {...register('closingTime')}
+                                    className="w-full border px-2 py-1 rounded"
+                                    placeholder="Bất kỳ" style={styles.input} />
+                            </div>
                         </div>
+                        <button type='submit' style={styles.button}>Tìm kiếm</button>
                     </div>
-                    <button style={styles.button}>Tìm kiếm</button>
                 </div>
             </div>
-        </div>
+        </form>
+
     );
 };
 

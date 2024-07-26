@@ -37,3 +37,20 @@ export const getBadmintonCenterById = (id) => {
         }
     });
 };
+
+export const searchBadmintonCenter = (location, operatingTime, closingTime) => {
+
+    console.log(location);
+    console.log(operatingTime);
+    console.log(closingTime);
+    return axios.get(`${API_BASE_URL}/search-badminton-centers`, {
+        params: {
+            Location: location,
+            OperatingTime: operatingTime,
+            ClosingTime: closingTime,
+        },
+        headers: {
+            'Accept': '*/*'
+        }
+    });
+};

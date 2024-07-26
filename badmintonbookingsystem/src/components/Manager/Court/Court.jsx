@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchBadmintonCenterByManager, updateCenterStatus } from "../../../services/centerService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare, faToggleOff, faToggleOn, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faToggleOff, faToggleOn, faTrash, faSortAlphaDown, faSortAlphaUp } from "@fortawesome/free-solid-svg-icons";
 import { fetchCourtsByCenterId, updateCourtStatus } from "../../../services/courtService";
 import AddCourtModal from "./AddCourtModal";
 import UpdateCourtModal from "./UpdateCourtModal";
@@ -14,6 +14,7 @@ export default function Courts() {
     const [totalPages, setTotalPages] = useState(1);
     const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
     const [selectedCourt, setSelectedCourt] = useState(null);
+    const [sortOrder, setSortOrder] = useState("asc"); // New state for sort order
     const token = localStorage.getItem("token");
 
     const courtsPerPage = 5; // Adjust the number of courts to display per page as needed
@@ -108,6 +109,18 @@ export default function Courts() {
         }
     };
 
+    // New function to handle sorting
+    const handleSort = () => {
+        const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+        const sortedCourts = [...courts].sort((a, b) => {
+            if (a.courtName < b.courtName) return newSortOrder === "asc" ? -1 : 1;
+            if (a.courtName > b.courtName) return newSortOrder === "asc" ? 1 : -1;
+            return 0;
+        });
+        setSortOrder(newSortOrder);
+        setCourts(sortedCourts);
+    };
+
     // Calculate the courts to display on the current page
     const startIndex = (currentPage - 1) * courtsPerPage;
     const courtsToDisplay = courts.slice(startIndex, startIndex + courtsPerPage);
@@ -127,8 +140,14 @@ export default function Courts() {
                             <div className='text-center text-lg font-bold col-span-2'>
                                 Ảnh
                             </div>
-                            <div className='text-center text-lg font-bold col-span-2'>
+                            <div className='text-center text-lg font-bold col-span-2 flex items-center justify-center'>
                                 Tên sân
+                                <button onClick={handleSort} className="ml-2">
+                                    <FontAwesomeIcon
+                                        icon={sortOrder === "asc" ? faSortAlphaDown : faSortAlphaUp}
+                                        style={{ color: "#000" }}
+                                    />
+                                </button>
                             </div>
                             <div className='text-center text-lg font-bold col-span-2'>
                                 Tên trung tâm

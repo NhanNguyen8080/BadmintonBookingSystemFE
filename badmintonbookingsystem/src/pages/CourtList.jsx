@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { fetchCenters } from '../services/centerService';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { fetchCourtsByCenterId } from '../services/courtService';
 import TimeSlotModal from '../components/TimeSlot/TimeSlotModal';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getBadmintonCenterById } from '../api/apiBadmintonCenter';
 import FixedBookingModal from '../components/TimeSlot/FixedBookingModal';
@@ -35,7 +35,7 @@ const CourtList = () => {
         };
 
         fetchCenterData();
-    }, []);
+    }, [centerId]);
 
     useEffect(() => {
         console.log('Center State Updated:', center);
@@ -52,15 +52,17 @@ const CourtList = () => {
         };
 
         fetchData();
-    }, [currentPage, dispatch]);
+    }, [currentPage, dispatch, centerId]);
+
+    const activeCourts = courts.filter(court => court.isActive);
 
     const indexOfLastUser = currentPage * courtsPerPage;
     const indexOfFirstUser = indexOfLastUser - courtsPerPage;
-    const currentCourt = courts.slice(indexOfFirstUser, indexOfLastUser);
+    const currentCourt = activeCourts.slice(indexOfFirstUser, indexOfLastUser);
 
-    const totalPages = Math.max(Math.ceil(courts.length / courtsPerPage), 1);
+    const totalPages = Math.max(Math.ceil(activeCourts.length / courtsPerPage), 1);
     const nextPage = () => {
-        if (currentPage < Math.ceil(courts.length / courtsPerPage)) {
+        if (currentPage < Math.ceil(activeCourts.length / courtsPerPage)) {
             setCurrentPage(currentPage + 1);
         }
     };
@@ -81,16 +83,16 @@ const CourtList = () => {
         <div className="container mx-auto p-4">
             {center && center.data && (
                 <>
-                    <h1 className="text-center text-2xl font-bold mb-4">{center.data.name}</h1>
                     {center.data.imgAvatar && (
-                        <div className="flex justify-center">
+                        <div className="flex justify-center mb-4">
                             <img
                                 src={center.data.imgAvatar}
                                 alt={center.data.imgAvatar}
-                                className="w-full h-80 object-fill rounded-t-lg mb-4 shadow-lg"
+                                className="w-full h-80 object-fill rounded-t-lg shadow-lg"
                             />
                         </div>
                     )}
+                    <h1 className="text-center text-2xl font-bold mb-4">{center.data.name}</h1>
                 </>
             )}
 

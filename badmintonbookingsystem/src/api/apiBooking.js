@@ -45,6 +45,37 @@ export const getBookingsByCenterId = (centerId) => {
         }
     });
 };
+
+export const searchBookings = (centerId, fromDate, toDate, customerName, customerEmail, customerPhone) => {
+    const url = `${API_BASE_URL}/bookings/search-court-reservation/center/${centerId}`;
+    const params = {};
+    if (fromDate) {
+        params.FromDate = fromDate;
+    }
+
+    if (toDate) {
+        params.ToDate = toDate;
+    }
+
+    if (customerName) {
+        params.CustomerName = customerName;
+    }
+
+    if (customerEmail) {
+        params.CustomerEmail = customerEmail;
+    }
+
+    if (customerPhone) {
+        params.CustomerPhone = customerPhone;
+    }
+    return axios.get(url, {
+        params: params,
+        headers: {
+            'accept': "*/*"
+        }
+    });
+};
+
 export const getBookingsByBookingId = (bookingId) => {
     const url = `${API_BASE_URL}/bookings/user-booking/${bookingId}`;
     return axios.get(url, {

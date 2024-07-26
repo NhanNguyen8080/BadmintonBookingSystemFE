@@ -6,24 +6,11 @@ import { toast } from "react-toastify";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
-const CenterList = () => {
+const CenterList = ({ centers }) => {
     const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(1);
     const [centersPerPage] = useState(9);
-    const [centers, setCenters] = useState([]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const centersData = await fetchCenters();
-                setCenters(centersData);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchData();
-    }, [dispatch]);
 
     const indexOfLastCenter = currentPage * centersPerPage;
     const indexOfFirstCenter = indexOfLastCenter - centersPerPage;
@@ -60,8 +47,9 @@ const CenterList = () => {
                             </Link>
                         </div>
                         <Link to={`/badminton-centers/${center.id}`}>
-                            <p className="text-orange-500 mb-2">Giờ mở cửa: {center.operatingTime} - Giờ đóng cửa: {center.closingTime}</p>
-                            <h2 className="text-xl font-semibold text-gray-800">{center.name}</h2>
+                            <p className="text-center text-orange-500 mb-2">Giờ mở cửa: {center.operatingTime} - Giờ đóng cửa: {center.closingTime}</p>
+                            <h2 className="text-center text-xl font-semibold text-gray-800">{center.name}</h2>
+                            <p className="text-center">{center.location}</p>
                         </Link>
                     </div>
                 ))}

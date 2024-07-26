@@ -1,6 +1,6 @@
 
 import { changeStatusCenter, createCenter, getAllCenters, updateCenter } from "../api/apiAdminCenter";
-import { getBadmintonActiveCenters, getBadmintonCenterById, getBadmintonCenterByManager } from "../api/apiBadmintonCenter";
+import { getBadmintonActiveCenters, getBadmintonCenterById, getBadmintonCenterByManager, searchBadmintonCenter } from "../api/apiBadmintonCenter";
 import { toast } from "react-toastify";
 import { getBadmintonCenters } from "../api/apiBadmintonCenter";
 export const fetchAllCenters = async (currentPage) => {
@@ -80,6 +80,20 @@ export const fetchCenters = async () => {
 export const fetchBadmintonCenterByManager = async (token) => {
   try {
     const response = await getBadmintonCenterByManager(token);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching center:', error);
+    toast.error('Error fetching center');
+    throw error;
+  }
+};
+
+export const fetchSearchBadmintonCenter = async (location, operatingTime, closingTime) => {
+  try {
+    console.log(location);
+    console.log(operatingTime);
+    console.log(closingTime);
+    const response = await searchBadmintonCenter(location, operatingTime, closingTime);
     return response.data;
   } catch (error) {
     console.error('Error fetching center:', error);

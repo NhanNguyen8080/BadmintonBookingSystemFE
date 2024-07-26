@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
-import { fetchBadmintonCenterByManager, updateCenterStatus } from "../../../services/centerService";
+import { fetchBadmintonCenterByManager } from "../../../services/centerService";
+import { fetchSearchedBookings } from "../../../services/bookingService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faToggleOff, faToggleOn, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { fetchBookingsByCenterId } from "../../../services/bookingService";
 
 export default function Bookings() {
     const [bookings, setBookings] = useState([]);
     const [center, setCenter] = useState(null);
-    const [isAddModalOpen, setAddModalOpen] = useState(false);
+    const [fromDate, setFromDate] = useState('');
+    const [toDate, setToDate] = useState('');
+    const [customerName, setCustomerName] = useState('');
+    const [customerEmail, setCustomerEmail] = useState('');
+    const [customerPhone, setCustomerPhone] = useState('');
     const [currentPage, setCurrentPage] = useState(parseInt(localStorage.getItem('currentPage')) || 1);
     const [totalPages, setTotalPages] = useState(1);
-    const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
-    const [selectedCenter, setSelectedCenter] = useState(null);
     const token = localStorage.getItem("token");
 
-    const bookingsPerPage = 5; // Adjust the number of courts to display per page as needed
+    const bookingsPerPage = 5; // Adjust the number of bookings to display per page as needed
 
     useEffect(() => {
         const fetchCenterData = async () => {
@@ -35,9 +37,8 @@ export default function Bookings() {
         const fetchBookingsData = async () => {
             if (center) {
                 try {
-                    const bookingsData = await fetchBookingsByCenterId(center[0].id);
+                    const bookingsData = await fetchSearchedBookings(center[0].id, fromDate, toDate, customerName, customerEmail, customerPhone);
                     setBookings(bookingsData);
-                    console.log('Fetched Bookings Data:', bookingsData);
                     setTotalPages(Math.ceil(bookingsData.length / bookingsPerPage));
                 } catch (error) {
                     console.log(error);
@@ -46,19 +47,10 @@ export default function Bookings() {
         };
         fetchBookingsData();
         localStorage.setItem('currentPage', currentPage);
-    }, [center, currentPage]);
+    }, [center, currentPage, fromDate, toDate, customerName, customerEmail, customerPhone]);
 
-    const handleOpenAddModal = () => {
-        setAddModalOpen(true);
-    };
-
-    const handleCloseAddModal = () => {
-        setAddModalOpen(false);
-    };
-
-    const handleBookingAdded = (newBooking) => {
-        setBookings((prevBookings) => [...prevBookings, newBooking]);
-        setTotalPages(Math.ceil((bookings.length + 1) / bookingsPerPage)); // Update total pages after adding a new booking
+    const handleSearch = () => {
+        setCurrentPage(1); // Reset to the first page on new search
     };
 
     const nextPage = () => {
@@ -74,21 +66,7 @@ export default function Bookings() {
         }
     };
 
-    const handleChangeStatus = async (id) => {
-        try {
-            console.log(id);
-            const updatedCenter = await updateCenterStatus(id);
-            setBookings((prevCenters) =>
-                prevCenters.map((center) =>
-                    center.id === updatedCenter.id ? { ...center, isActive: updatedCenter.isActive } : center
-                )
-            );
-        } catch (error) {
-            console.error('Error changing center status:', error);
-        }
-    };
-
-    // Calculate the courts to display on the current page
+    // Calculate the bookings to display on the current page
     const startIndex = (currentPage - 1) * bookingsPerPage;
     const bookingsToDisplay = bookings.slice(startIndex, startIndex + bookingsPerPage);
 
@@ -100,17 +78,61 @@ export default function Bookings() {
                     <div className='flex justify-center items-center mb-4'>
                         <h2 className='text-xl font-bold'>Các lịch đặt sân</h2>
                     </div>
-                    <div className='flex justify-center items-center'>
-                        <div className='flex space-x-60'>
-                            <div className='mr-4'>
-                                <label className='block text-gray-700'>Từ ngày</label>
-                                <input type='date' className='border rounded px-4 py-1' />
+                    <div className='flex justify-center'>
+                        <div className='grid grid-cols-3 gap-4 w-full max-w-3xl'>
+                            <div className='col-span-1'>
+                                <label className='block text-gray-700 text-sm'>Từ ngày</label>
+                                <input
+                                    type='date'
+                                    className='border rounded px-2 py-1 w-full'
+                                    value={fromDate}
+                                    onChange={(e) => setFromDate(e.target.value)}
+                                />
                             </div>
-                            <div className='mr-4'>
-                                <label className='block text-gray-700'>Đến ngày</label>
-                                <input type='date' className='border rounded px-4 py-1' />
+                            <div className='col-span-1'>
+                                <label className='block text-gray-700 text-sm'>Đến ngày</label>
+                                <input
+                                    type='date'
+                                    className='border rounded px-2 py-1 w-full'
+                                    value={toDate}
+                                    onChange={(e) => setToDate(e.target.value)}
+                                />
                             </div>
-                            <button className='bg-blue-500 text-white px-8 py-1 rounded'>Search</button>
+                            <div className='col-span-1 flex items-end'>
+                                <button
+                                    className='bg-blue-500 text-white px-4 py-1 rounded w-full'
+                                    onClick={handleSearch}
+                                >
+                                    Search
+                                </button>
+                            </div>
+                            <div className='col-span-1'>
+                                <label className='block text-gray-700 text-sm'>Tên khách hàng</label>
+                                <input
+                                    type='text'
+                                    className='border rounded px-2 py-1 w-full'
+                                    value={customerName}
+                                    onChange={(e) => setCustomerName(e.target.value)}
+                                />
+                            </div>
+                            <div className='col-span-1'>
+                                <label className='block text-gray-700 text-sm'>Email</label>
+                                <input
+                                    type='email'
+                                    className='border rounded px-2 py-1 w-full'
+                                    value={customerEmail}
+                                    onChange={(e) => setCustomerEmail(e.target.value)}
+                                />
+                            </div>
+                            <div className='col-span-1'>
+                                <label className='block text-gray-700 text-sm'>Số điện thoại</label>
+                                <input
+                                    type='text'
+                                    className='border rounded px-2 py-1 w-full'
+                                    value={customerPhone}
+                                    onChange={(e) => setCustomerPhone(e.target.value)}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -125,7 +147,6 @@ export default function Bookings() {
                         <div className='text-center text-lg font-bold col-span-1'>Bắt đầu</div>
                         <div className='text-center text-lg font-bold col-span-1'>Kết thúc</div>
                         <div className='text-center text-lg font-bold col-span-1'>Giá</div>
-                        {/* <div className='text-center text-lg font-bold col-span-1'>Action</div> */}
                     </div>
                     {bookingsToDisplay.map((booking) => (
                         <div key={booking.id} className='grid grid-cols-8 gap-4 items-center p-4 border-b hover:bg-gray-100'>
@@ -139,11 +160,6 @@ export default function Bookings() {
                             <div className='text-center flex items-center justify-center col-span-1'>{booking.startTime}</div>
                             <div className='text-center flex items-center justify-center col-span-1'>{booking.endTime}</div>
                             <div className='text-center flex items-center justify-center col-span-1'>{booking.slotPrice}</div>
-                            {/* <div className='flex items-center justify-center'>
-                                <button>
-                                    <FontAwesomeIcon icon={faPenToSquare} style={{ color: "#8a0505" }} size="2x" />
-                                </button>
-                            </div> */}
                         </div>
                     ))}
                     <div className='flex justify-between p-4 bg-gray-200'>

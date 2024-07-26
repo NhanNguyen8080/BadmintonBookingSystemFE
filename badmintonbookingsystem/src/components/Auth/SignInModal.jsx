@@ -17,6 +17,7 @@ export default function SignInModal() {
     register,
     handleSubmit,
     formState: { errors },
+    setError
   } = useForm();
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
@@ -41,6 +42,10 @@ export default function SignInModal() {
       }
     } catch (error) {
       // Handle error inside authenticateUser
+      setError("apiError", {
+        type: "manual",
+        message: "Email hoặc mật khẩu sai! Vui lòng nhập lại."
+      });
     }
   };
 
@@ -166,6 +171,10 @@ export default function SignInModal() {
                         </div>
                         {errors.password && (
                           <p className="text-red-400 text-sm">{errors.password.message}</p>
+                        )}
+
+                        {errors.apiError && (
+                          <p className="text-red-400 text-sm">{errors.apiError.message}</p>
                         )}
 
                         <button
